@@ -6,7 +6,7 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import edu.hws.eck.umb.util.I18n;
-
+//new comment so i can commit
 /**
  * Defines a dialog that allows the user to input an image
  * size as a value of type Dimension, with text input fields for
