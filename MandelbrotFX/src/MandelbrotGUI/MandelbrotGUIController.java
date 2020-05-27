@@ -13,7 +13,7 @@ import java.util.ResourceBundle;
 public class MandelbrotGUIController implements Initializable {
 
 
-    //Setting up various ChoiceBoxes with their Labels
+    //Setting up various ComboBoxes with their Labels
     @FXML private ComboBox threadsComboBox;
     @FXML private ComboBox schedulingComboBox;
     private String threadsComboBoxSelection;
@@ -27,7 +27,7 @@ public class MandelbrotGUIController implements Initializable {
     @FXML private Label labelPlaceHolder;
     private int chunkSizeSelection;
 
-    //Setting up toggling viewCheckBox
+    //Setting up view
     @FXML private Label viewLabel;
     @FXML private ComboBox viewComboBox;
     private String viewSelection;

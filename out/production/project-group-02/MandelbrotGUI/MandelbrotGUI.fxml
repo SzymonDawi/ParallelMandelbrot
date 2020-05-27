@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.net.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="784.0" prefWidth="1284.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MandelbrotGUI.MandelbrotGUIController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="794.0" prefWidth="1284.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MandelbrotGUI.MandelbrotGUIController">
    <children>
       <VBox layoutX="2.0" layoutY="2.0" prefHeight="780.0" prefWidth="1280.0">
          <children>
-            <HBox prefHeight="54.0" prefWidth="1280.0">
+            <HBox prefHeight="64.0" prefWidth="1280.0" style="-fx-background-color: #e0e0e0;">
                <children>
                   <VBox layoutX="10.0" layoutY="10.0" prefHeight="54.0" prefWidth="256.0">
                      <children>
@@ -21,7 +22,7 @@
                         </StackPane>
                         <StackPane prefHeight="150.0" prefWidth="200.0">
                            <children>
-                              <ComboBox fx:id="threadsComboBox" onAction="#updateThreadsComboBoxSelection" prefHeight="25.0" prefWidth="200.0" />
+                              <ComboBox fx:id="threadsComboBox" onAction="#updateThreadsComboBoxSelection" prefHeight="25.0" prefWidth="200.0" style="-fx-border-style: solid; -fx-border-radius: 3 3 3 3; -fx-background-color: #ffffff;" />
                            </children></StackPane>
                      </children>
                   </VBox>
@@ -34,7 +35,7 @@
                         </StackPane>
                         <StackPane prefHeight="150.0" prefWidth="200.0">
                            <children>
-                              <ComboBox fx:id="schedulingComboBox" onAction="#updateSchedulingComboBoxSelection" prefHeight="25.0" prefWidth="200.0" />
+                              <ComboBox fx:id="schedulingComboBox" onAction="#updateSchedulingComboBoxSelection" prefHeight="25.0" prefWidth="200.0" style="-fx-background-color: #ffffff; -fx-border-style: solid; -fx-border-radius: 3 3 3 3;" />
                            </children></StackPane>
                      </children>
                   </VBox>
@@ -66,7 +67,7 @@
                         </StackPane>
                         <StackPane prefHeight="150.0" prefWidth="200.0">
                            <children>
-                              <ComboBox fx:id="viewComboBox" onAction="#updateViewSelection" prefHeight="25.0" prefWidth="200.0" />
+                              <ComboBox fx:id="viewComboBox" onAction="#updateViewSelection" prefHeight="25.0" prefWidth="200.0" style="-fx-background-color: #ffffff; -fx-border-radius: 3 3 3 3; -fx-border-style: solid;" />
                            </children></StackPane>
                      </children>
                   </VBox>
@@ -84,7 +85,7 @@
                         </StackPane>
                         <StackPane prefHeight="150.0" prefWidth="200.0">
                            <children>
-                              <Button fx:id="startButton" mnemonicParsing="false" onAction="#pressStartButton" text="Start Parallelising Mandelbrot">
+                              <Button fx:id="startButton" mnemonicParsing="false" onAction="#pressStartButton" style="-fx-background-color: #48c400; -fx-border-style: solid; -fx-border-radius: 3 3 3 3;" text="Start Parallelising Mandelbrot">
                                  <font>
                                     <Font name="System Bold" size="12.0" />
                                  </font>
@@ -94,8 +95,11 @@
                      </children>
                   </VBox>
                </children>
+               <padding>
+                  <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+               </padding>
             </HBox>
-            <Pane prefHeight="720.0" prefWidth="1280.0">
+            <Pane layoutY="74.0" prefHeight="720.0" prefWidth="1280.0">
                <padding>
                   <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                </padding>
@@ -109,4 +113,7 @@
          </padding>
       </VBox>
    </children>
+   <stylesheets>
+      <URL value="@styling.css" />
+   </stylesheets>
 </Pane>
