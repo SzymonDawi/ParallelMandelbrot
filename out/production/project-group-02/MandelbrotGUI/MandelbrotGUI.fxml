@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.net.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
@@ -9,7 +8,7 @@
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="794.0" prefWidth="1284.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MandelbrotGUI.MandelbrotGUIController">
    <children>
-      <VBox layoutX="2.0" layoutY="2.0" prefHeight="780.0" prefWidth="1280.0">
+      <VBox layoutX="2.0" layoutY="2.0" prefHeight="790.0" prefWidth="1280.0">
          <children>
             <HBox prefHeight="64.0" prefWidth="1280.0" style="-fx-background-color: #e0e0e0;">
                <children>
@@ -17,7 +16,10 @@
                      <children>
                         <StackPane prefHeight="150.0" prefWidth="200.0">
                            <children>
-                              <Label fx:id="threadsLabel" alignment="CENTER" prefHeight="25.0" prefWidth="318.0" text="Number of Threads" textAlignment="CENTER" />
+                              <Label fx:id="threadsLabel" alignment="CENTER" prefHeight="25.0" prefWidth="318.0" text="Number of Threads" textAlignment="CENTER">
+                                 <font>
+                                    <Font name="Comic Sans MS" size="12.0" />
+                                 </font></Label>
                            </children>
                         </StackPane>
                         <StackPane prefHeight="150.0" prefWidth="200.0">
@@ -30,7 +32,10 @@
                      <children>
                         <StackPane prefHeight="150.0" prefWidth="200.0">
                            <children>
-                              <Label fx:id="schedulingLabel" alignment="CENTER" prefHeight="25.0" prefWidth="318.0" text="Scheduling Policy" textAlignment="CENTER" />
+                              <Label fx:id="schedulingLabel" alignment="CENTER" prefHeight="25.0" prefWidth="318.0" text="Scheduling Policy" textAlignment="CENTER">
+                                 <font>
+                                    <Font name="Comic Sans MS" size="12.0" />
+                                 </font></Label>
                            </children>
                         </StackPane>
                         <StackPane prefHeight="150.0" prefWidth="200.0">
@@ -45,8 +50,14 @@
                            <children>
                               <HBox prefHeight="100.0" prefWidth="200.0">
                                  <children>
-                                    <Label fx:id="chunkLabel" alignment="CENTER" prefHeight="25.0" prefWidth="128.0" text="Chunk Size: " textAlignment="CENTER" />
-                                    <Label fx:id="labelPlaceHolder" prefHeight="25.0" prefWidth="128.0" text="1" />
+                                    <Label fx:id="chunkLabel" alignment="CENTER" prefHeight="25.0" prefWidth="128.0" text="Chunk Size: " textAlignment="CENTER">
+                                       <font>
+                                          <Font name="Comic Sans MS" size="12.0" />
+                                       </font></Label>
+                                    <Label fx:id="labelPlaceHolder" prefHeight="25.0" prefWidth="128.0" text="1">
+                                       <font>
+                                          <Font name="Comic Sans MS" size="12.0" />
+                                       </font></Label>
                                  </children>
                               </HBox>
                            </children>
@@ -62,7 +73,10 @@
                      <children>
                         <StackPane prefHeight="150.0" prefWidth="200.0">
                            <children>
-                              <Label fx:id="viewLabel" alignment="CENTER" prefHeight="25.0" prefWidth="318.0" text="Change Image View" textAlignment="CENTER" />
+                              <Label fx:id="viewLabel" alignment="CENTER" prefHeight="25.0" prefWidth="318.0" text="Change Image View" textAlignment="CENTER">
+                                 <font>
+                                    <Font name="Comic Sans MS" size="12.0" />
+                                 </font></Label>
                            </children>
                         </StackPane>
                         <StackPane prefHeight="150.0" prefWidth="200.0">
@@ -77,17 +91,23 @@
                            <children>
                               <HBox prefHeight="100.0" prefWidth="200.0">
                                  <children>
-                                    <Label fx:id="timeElapsedLabel" alignment="CENTER" prefHeight="30.0" prefWidth="127.0" text="Time Elapsed:" />
-                                    <Label fx:id="actualTimeElapsed" alignment="CENTER" prefHeight="27.0" prefWidth="132.0" text="The time will be here" />
+                                    <Label fx:id="timeElapsedLabel" alignment="CENTER" prefHeight="25.0" prefWidth="127.0" text="Time Elapsed:">
+                                       <font>
+                                          <Font name="Comic Sans MS" size="12.0" />
+                                       </font></Label>
+                                    <Label fx:id="actualTimeElapsed" alignment="CENTER" prefHeight="25.0" prefWidth="132.0" text="The time will be here">
+                                       <font>
+                                          <Font name="Comic Sans MS" size="12.0" />
+                                       </font></Label>
                                  </children>
                               </HBox>
                            </children>
                         </StackPane>
                         <StackPane prefHeight="150.0" prefWidth="200.0">
                            <children>
-                              <Button fx:id="startButton" mnemonicParsing="false" onAction="#pressStartButton" style="-fx-background-color: #48c400; -fx-border-style: solid; -fx-border-radius: 3 3 3 3;" text="Start Parallelising Mandelbrot">
+                              <Button fx:id="startButton" mnemonicParsing="false" onAction="#pressStartButton" prefHeight="25.0" prefWidth="200.0" style="-fx-background-color: #48c400; -fx-border-style: solid; -fx-border-radius: 3 3 3 3;" text="Start Parallelising Mandelbrot">
                                  <font>
-                                    <Font name="System Bold" size="12.0" />
+                                    <Font name="Comic Sans MS Bold" size="12.0" />
                                  </font>
                               </Button>
                            </children>
@@ -113,7 +133,4 @@
          </padding>
       </VBox>
    </children>
-   <stylesheets>
-      <URL value="@styling.css" />
-   </stylesheets>
 </Pane>
