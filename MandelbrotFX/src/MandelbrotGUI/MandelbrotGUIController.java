@@ -48,13 +48,17 @@ public class MandelbrotGUIController implements Initializable {
 
     //set up the image that will be shown
     @FXML private ImageView shownImage;
-
+    public void setImageView(ImageView shownImage){
+        this.shownImage = shownImage;
+    }
     public void pressStartButton(ActionEvent event) {
         chunkSizeSelection = (int)chunkSizeSlider.getValue();
 
         //this creates a new chunking instance and puts it on separate thread
         Chunking t1 = new Chunking(shownImage);
-        new Thread(t1).start();
+        Thread th = new Thread(t1);
+        th.setDaemon(true);
+        th.start();
 
         System.out.println("view selection: " + viewSelection);
         System.out.println("chunk size: " + chunkSizeSelection);
@@ -63,21 +67,21 @@ public class MandelbrotGUIController implements Initializable {
 
     }
     public void updateViewSelection(ActionEvent event) {
-        viewSelection = viewComboBox.getValue().toString();
+        //viewSelection = viewComboBox.getValue().toString();
     }
 
     public void updateChunkSizeSelection(ActionEvent event) {
-        chunkSizeSelection = (int)chunkSizeSlider.getValue();
+        //chunkSizeSelection = (int)chunkSizeSlider.getValue();
     }
 
     public void updateSchedulingComboBoxSelection(ActionEvent event)
     {
-        schedulingComboBoxSelection = schedulingComboBox.getValue().toString();
+        //schedulingComboBoxSelection = schedulingComboBox.getValue().toString();
     }
 
     public void updateThreadsComboBoxSelection(ActionEvent event)
     {
-        threadsComboBoxSelection = threadsComboBox.getValue().toString();
+        ///threadsComboBoxSelection = threadsComboBox.getValue().toString();
     }
 
     private int findNumberOfCores() {
@@ -133,7 +137,6 @@ public class MandelbrotGUIController implements Initializable {
 
         //initialise startButton
         startButton.setText("Start Parallelising Mandelbrot");
-
 
         //File file = new File("mandelbrot.png");
         //Image image = new Image(file.toURI().toString());

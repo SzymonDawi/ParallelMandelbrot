@@ -25,7 +25,7 @@ public class Scheduler implements Runnable{
         //assigns the jobs to threads and starts them all at the same time.
         CountDownLatch latch = new CountDownLatch(1);
         for(int i = 0; i < chunk_array.length; i++){
-            Jobs task = new Jobs(num_jobs, 1000, chunk_array[i],latch);
+            Jobs task = new Jobs(num_jobs, 1000000, chunk_array[i],latch);
             Future<?> f= scheduler.submit(task);
             futures.add(f);
             num_jobs++;

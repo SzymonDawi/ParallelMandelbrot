@@ -21,12 +21,13 @@ public class Chunking implements Runnable{
     ImageView imageView;
     private List<Future<?>> futures = new ArrayList<Future<?>>();
     public Chunking(ImageView imageView) {
-        this.imageView = imageView;
+        synchronized(imageView) {
+            this.imageView = imageView;
+        }
     }
 
     @Override
     public void run(){
-        BufferedImage image = new BufferedImage(1280, 720, BufferedImage.TYPE_INT_RGB);
         WritableImage img = new WritableImage(1280, 720);
         PixelWriter pw  = img.getPixelWriter();
         int cores = 10;
@@ -38,7 +39,7 @@ public class Chunking implements Runnable{
         futures = Schedule.getFutures();
         //blocking until the threads finish
         synchronized(chunk_array) {
-            for (int i = 0; i < futures.size()-1; i++) {
+            for (int i = 0; i < futures.size(); i++) {
                 while (!futures.get(i).isDone()) {
                     //updates the local image.
                     try {
@@ -50,11 +51,20 @@ public class Chunking implements Runnable{
                     } catch (Exception e) {
 
                     }
+                    try{
+                        Thread.sleep(600);
+                    }catch (Exception e){
+
+                    }
 
                     //tells the javaFX GUI thread to update the image.
-                    Platform.runLater(() -> {
-                        imageView.setImage(img);
-                    });
+                    try {
+                        Platform.runLater(() -> {
+                            imageView.setImage(img);
+                        });
+                    }catch (Exception e){
+                        System.out.println("test");
+                    }
                 }
             }
         }
@@ -66,7 +76,23 @@ public class Chunking implements Runnable{
             }
         }
 
+        try {
+            for (int k = 0; k < chunk_array.length; k++) {
+                for (int j = 0; j < chunk_array[k].getsize(); j++) {
+                    pw.setColor(chunk_array[k].getPixel(j).getX(), chunk_array[k].getPixel(j).getY(), Color.web(chunk_array[k].getPixel(j).getColour()));
+                }
+            }
+        } catch (Exception e) {
 
+        }
+        //tells the javaFX GUI thread to update the image.
+        try {
+            Platform.runLater(() -> {
+                imageView.setImage(img);
+            });
+        }catch (Exception e){
+            System.out.println("test");
+        }
     }
 
     public static chunk[] createChunks(int numCores, int width, int height,int chunkingMethod){

@@ -45,6 +45,7 @@ public class Jobs implements Runnable{
                 }
 
                 if (iteration < iteration_num) {
+                    //System.out.println(iteration % 5+" \n");
                     c.getPixel(i).setColour(colours[iteration % 5]);
                 } else {
                     c.getPixel(i).setColour("0x000000");
