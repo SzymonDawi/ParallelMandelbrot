@@ -1,10 +1,19 @@
 package MandelbrotGUI;
 
+import Parallel.Chunking;
+import Parallel.Scheduler;
+import Parallel.chunk;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+import java.io.File;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Future;
 
 public class MandelbrotMain extends Application {
 
@@ -16,8 +25,8 @@ public class MandelbrotMain extends Application {
         primaryStage.show();
     }
 
-
     public static void main(String[] args) {
         launch(args);
     }
 }
+

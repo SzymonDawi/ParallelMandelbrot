@@ -1,17 +1,23 @@
 package MandelbrotGUI;
 
+import Parallel.Chunking;
+import Parallel.Scheduler;
+import Parallel.chunk;
 import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class MandelbrotGUIController implements Initializable {
-
 
     //Setting up various ComboBoxes with their Labels
     @FXML private ComboBox threadsComboBox;
@@ -45,10 +51,16 @@ public class MandelbrotGUIController implements Initializable {
 
     public void pressStartButton(ActionEvent event) {
         chunkSizeSelection = (int)chunkSizeSlider.getValue();
+
+        //this creates a new chunking instance and puts it on separate thread
+        Chunking t1 = new Chunking(shownImage);
+        new Thread(t1).start();
+
         System.out.println("view selection: " + viewSelection);
         System.out.println("chunk size: " + chunkSizeSelection);
         System.out.println("scheduling policy: " + schedulingComboBoxSelection);
         System.out.println("number of threads: " + threadsComboBoxSelection);
+
     }
     public void updateViewSelection(ActionEvent event) {
         viewSelection = viewComboBox.getValue().toString();
@@ -121,5 +133,10 @@ public class MandelbrotGUIController implements Initializable {
 
         //initialise startButton
         startButton.setText("Start Parallelising Mandelbrot");
+
+
+        //File file = new File("mandelbrot.png");
+        //Image image = new Image(file.toURI().toString());
+        //shownImage.setImage(image);
     }
 }

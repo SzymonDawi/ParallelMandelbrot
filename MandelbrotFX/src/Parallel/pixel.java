@@ -1,7 +1,9 @@
+package Parallel;
+
 public class pixel {
     private int x;
     private int y;
-    private int colour;
+    private String colour;
 
     public pixel(int x, int y){
         this.x = x;
@@ -13,12 +15,11 @@ public class pixel {
     public int getY(){
         return y;
     }
-
-    public int getColour(){
+    public String getColour(){
         return colour;
     }
 
-    public void setColour(int colour){
+    public void setColour(String colour){
         this.colour = colour;
     }
 }
