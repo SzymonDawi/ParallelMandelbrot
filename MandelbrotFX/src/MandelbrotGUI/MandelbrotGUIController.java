@@ -52,7 +52,7 @@ public class MandelbrotGUIController implements Initializable {
         chunkSizeSelection = (int)chunkSizeSlider.getValue();
 
         //this creates a new chunking instance and puts it on separate thread
-        Chunking t1 = new Chunking(shownImage,schedulingComboBoxSelection,5);
+        Chunking t1 = new Chunking(shownImage,schedulingComboBoxSelection,Integer.parseInt(threadsComboBoxSelection));
         Thread th = new Thread(t1);
         th.setDaemon(true);
         th.start();
