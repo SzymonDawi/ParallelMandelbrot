@@ -8,8 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+import javafx.scene.image.*;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -48,14 +47,12 @@ public class MandelbrotGUIController implements Initializable {
 
     //set up the image that will be shown
     @FXML private ImageView shownImage;
-    public void setImageView(ImageView shownImage){
-        this.shownImage = shownImage;
-    }
+
     public void pressStartButton(ActionEvent event) {
         chunkSizeSelection = (int)chunkSizeSlider.getValue();
 
         //this creates a new chunking instance and puts it on separate thread
-        Chunking t1 = new Chunking(shownImage);
+        Chunking t1 = new Chunking(shownImage,schedulingComboBoxSelection,5);
         Thread th = new Thread(t1);
         th.setDaemon(true);
         th.start();
@@ -67,21 +64,21 @@ public class MandelbrotGUIController implements Initializable {
 
     }
     public void updateViewSelection(ActionEvent event) {
-        //viewSelection = viewComboBox.getValue().toString();
+        viewSelection = viewComboBox.getValue().toString();
     }
 
     public void updateChunkSizeSelection(ActionEvent event) {
-        //chunkSizeSelection = (int)chunkSizeSlider.getValue();
+        chunkSizeSelection = (int)chunkSizeSlider.getValue();
     }
 
     public void updateSchedulingComboBoxSelection(ActionEvent event)
     {
-        //schedulingComboBoxSelection = schedulingComboBox.getValue().toString();
+        schedulingComboBoxSelection = schedulingComboBox.getValue().toString();
     }
 
     public void updateThreadsComboBoxSelection(ActionEvent event)
     {
-        ///threadsComboBoxSelection = threadsComboBox.getValue().toString();
+        threadsComboBoxSelection = threadsComboBox.getValue().toString();
     }
 
     private int findNumberOfCores() {
@@ -105,8 +102,8 @@ public class MandelbrotGUIController implements Initializable {
         threadsComboBox.setValue(1);
 
         //initialise schedulingChoiceBox
-        schedulingComboBox.getItems().addAll("Static", "Dynamic", "Cyclic", "Guided");
-        schedulingComboBox.setValue("Static");
+        schedulingComboBox.getItems().addAll("Static-block","Static-Cyclic", "Dynamic", "Guided");
+        schedulingComboBox.setValue("Static-block");
 
         //initialise chunkSizeSlider
         chunkSizeSlider.setMin(1);

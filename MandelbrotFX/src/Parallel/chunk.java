@@ -11,20 +11,16 @@ public class chunk {
     }
 
     public void add(int x, int y){
-        synchronized(chunk_list) {
-            chunk_list.add(new pixel(x, y));
-        }
+        pixel p = new pixel(x,y);
+        p.setColour("0xFFFFFF");
+        chunk_list.add(p);
     }
 
     public pixel getPixel(int i){
-        synchronized(chunk_list) {
-            return chunk_list.get(i);
-        }
+        return chunk_list.get(i);
     }
 
     public int getsize(){
-        synchronized(chunk_list) {
-            return chunk_list.size();
-        }
+        return chunk_list.size();
     }
 }

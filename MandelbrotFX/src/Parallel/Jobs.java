@@ -12,11 +12,13 @@ public class Jobs implements Runnable{
     private int height = 720;
     private String colours[] = {"0xE3170A", "0xF75C03", "0xFAA613", "0xF3DE2C", "0xF0F66E"};
     private CountDownLatch latch;
+    private int size = 0;
 
     public Jobs(int id, int iteration_num, chunk c, CountDownLatch latch){
         id_task = id;
         this.iteration_num = iteration_num;
         this.c = c;
+        size = c.getsize();
         this.latch = latch;
     }
 
@@ -31,8 +33,8 @@ public class Jobs implements Runnable{
 
         //runs mandelbrot on the chunk.
         System.out.println("Task "+id_task+" is running");
-        synchronized(c) {
-            for (int i = 0; i < c.getsize(); i++) {
+        for (int i = 0; i < size; i++) {
+            synchronized(c) {
                 double c_re = (c.getPixel(i).getX() - width / 2.0) * 4.0 / width;
                 double c_im = (c.getPixel(i).getY() - height / 2.0) * 4.0 / width;
                 double x = 0, y = 0;
@@ -45,13 +47,24 @@ public class Jobs implements Runnable{
                 }
 
                 if (iteration < iteration_num) {
-                    //System.out.println(iteration % 5+" \n");
-                    c.getPixel(i).setColour(colours[iteration % 5]);
+                    //System.out.println("iteration " + iteration );
+                    if (iteration < 2) {
+                        c.getPixel(i).setColour(colours[0]);
+                    } else if (iteration < 10) {
+                        c.getPixel(i).setColour(colours[1]);
+                    } else if (iteration < 15) {
+                        c.getPixel(i).setColour(colours[2]);
+                    } else if (iteration < 25) {
+                        c.getPixel(i).setColour(colours[3]);
+                    } else {
+                        c.getPixel(i).setColour(colours[4]);
+                    }
+
                 } else {
                     c.getPixel(i).setColour("0x000000");
                 }
             }
-            System.out.println("Task " + id_task + " is done");
         }
+        System.out.println("Task " + id_task + " is done");
     }
 }
