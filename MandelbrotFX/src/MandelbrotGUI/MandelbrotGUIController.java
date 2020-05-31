@@ -19,6 +19,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.concurrent.TimeUnit;
 
 public class MandelbrotGUIController implements Initializable {
 
@@ -45,6 +46,8 @@ public class MandelbrotGUIController implements Initializable {
     @FXML private Label timeElapsedLabel;
     @FXML private Label actualTimeElapsed;
     private double timeElapsed;
+    private long startTime;
+    private long endTime;
 
     //Setting up start button
     @FXML private Button startButton;
@@ -69,8 +72,17 @@ public class MandelbrotGUIController implements Initializable {
         Chunking t1 = new Chunking(shownImage,schedulingComboBoxSelection,Integer.parseInt(threadsComboBoxSelection));
         Thread th = new Thread(t1);
         th.setDaemon(true);
+        startTime = System.nanoTime();
         th.start();
-
+        try {
+            //notify when thread has ended
+            th.join();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        endTime = System.nanoTime();
+        timeElapsed = (TimeUnit.MILLISECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS)/1000.000);
+        setElapsedTime();
         System.out.println("view selection: " + viewSelection);
         System.out.println("chunk size: " + chunkSizeSelection);
         System.out.println("scheduling policy: " + schedulingComboBoxSelection);
@@ -94,6 +106,9 @@ public class MandelbrotGUIController implements Initializable {
     {
         threadsComboBoxSelection = threadsComboBox.getValue().toString();
     }
+    private void setElapsedTime() {
+        actualTimeElapsed.setText(timeElapsed + "s");
+    }
 
     private int findNumberOfCores() {
         int numberOfCores;
@@ -108,6 +123,7 @@ public class MandelbrotGUIController implements Initializable {
         chunkLabel.setText("Chunk Size: ");
         timeElapsedLabel.setText("Time elapsed:");
         viewLabel.setText("Change Image View");
+        actualTimeElapsed.setText("");
 
         //initialise threadsChoiceBox options
         for(int i = 1; i <= findNumberOfCores(); i++) {
