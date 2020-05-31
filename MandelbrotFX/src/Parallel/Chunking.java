@@ -1,11 +1,15 @@
 package Parallel;
 
 import MandelbrotGUI.MandelbrotGUIController;
+import MandelbrotGUI.MandelbrotMain;
+import com.sun.javafx.tk.Toolkit;
 import javafx.application.Platform;
 import javafx.scene.image.*;
 
 import javax.imageio.ImageIO;
 import javafx.scene.paint.Color;
+
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
@@ -14,12 +18,15 @@ import java.util.concurrent.Future;
 
 public class Chunking implements Runnable{
     //the class controls the chunking and initialises the scheduler.
-    chunk chunk_array[];
-    String chunkMethod = "block";
-    int num_threads;
-    int height = 720;
-    int width = 1280;
-    ImageView imageView;
+    private chunk chunk_array[];
+    private String chunkMethod = "block";
+    private int num_threads;
+    private int height = 720;
+    private int width = 1280;
+    private  ImageView imageView;
+    private WritableImage img = new WritableImage(1280, 720);
+    private PixelWriter pw  = img.getPixelWriter();
+
     private List<Future<?>> futures = new ArrayList<Future<?>>();
 
     public Chunking(ImageView imageView, String chunkMethod, int num_threads) {
@@ -31,20 +38,21 @@ public class Chunking implements Runnable{
 
     @Override
     public void run(){
-        WritableImage img = new WritableImage(1280, 720);
-        PixelWriter pw  = img.getPixelWriter();
 
-        int chunkingMethod = 1;
         createChunks();
         Scheduler Schedule = new Scheduler(num_threads,"static",chunk_array);
         Schedule.run();
-        int test = 0;
         futures = Schedule.getFutures();
-        //blocking until the threads finish
-
         boolean running = true;
         int done_task = 0;
         while(running){
+            /*try {
+                Thread.sleep(100);
+            }catch (Exception e){
+
+            }*/
+
+
             if(done_task == futures.size()){
                 running = false;
             }
@@ -54,6 +62,18 @@ public class Chunking implements Runnable{
                 if(futures.get(i).isDone()){
                     done_task++;
                 }
+            }
+
+            try {
+                Thread.sleep(1);
+                Platform.runLater(() -> {
+                    synchronized(chunk_array) {
+                        imageView.setImage(img);
+                    }
+                });
+
+            } catch (Exception e) {
+
             }
 
             synchronized(chunk_array) {
@@ -66,32 +86,34 @@ public class Chunking implements Runnable{
                         }
                     }
                 }
-                try {
-                    Thread.sleep(200);
-                    Platform.runLater(() -> {
-                        imageView.setImage(img);
-                    });
-
-                } catch (Exception e) {
-
-                }
             }
+
+            /*try {
+                Platform.runLater(() -> {
+                    synchronized(chunk_array) {
+                        imageView.setImage(img);
+                    }
+                });
+
+            } catch (Exception e) {
+
+            }*/
         }
 
         //tells the javaFX GUI thread to update the image.
         try {
-
             Platform.runLater(() -> {
-                imageView.setImage(img);
+                synchronized(chunk_array) {
+                    imageView.setImage(img);
+                }
             });
         }catch (Exception e){
-            System.out.println("test");
+
         }
     }
 
     public void createChunks(){
         //chunks the data.
-
         for (int i=0;i<num_threads;i++){
             chunk_array[i] = new chunk();
         }

@@ -3,12 +3,16 @@ package MandelbrotGUI;
 import Parallel.Chunking;
 import Parallel.Scheduler;
 import Parallel.chunk;
+import javafx.animation.AnimationTimer;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.LongProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.*;
+import javafx.scene.paint.Color;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -50,6 +54,16 @@ public class MandelbrotGUIController implements Initializable {
 
     public void pressStartButton(ActionEvent event) {
         chunkSizeSelection = (int)chunkSizeSlider.getValue();
+        WritableImage img = new WritableImage(1280, 720);
+        PixelWriter pw  = img.getPixelWriter();
+
+        for(int i = 0; i < 720; i++){
+            for(int j = 0; j <1280; j++){
+                pw.setColor(j, i, Color.WHITE);
+            }
+        }
+
+        shownImage.setImage(img);
 
         //this creates a new chunking instance and puts it on separate thread
         Chunking t1 = new Chunking(shownImage,schedulingComboBoxSelection,Integer.parseInt(threadsComboBoxSelection));
@@ -134,6 +148,7 @@ public class MandelbrotGUIController implements Initializable {
 
         //initialise startButton
         startButton.setText("Start Parallelising Mandelbrot");
+
 
         //File file = new File("mandelbrot.png");
         //Image image = new Image(file.toURI().toString());
