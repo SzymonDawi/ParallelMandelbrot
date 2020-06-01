@@ -29,6 +29,8 @@ public class Chunking implements Runnable{
 
     private List<Future<?>> futures = new ArrayList<Future<?>>();
 
+    private volatile static boolean exit = false;
+
     public Chunking(ImageView imageView, String chunkMethod, int num_threads) {
         this.imageView = imageView;
         this.chunkMethod = chunkMethod;
@@ -36,16 +38,21 @@ public class Chunking implements Runnable{
         chunk_array = new chunk[num_threads];
     }
 
+    public static void setExit(boolean exitStatus) {
+        exit = exitStatus;
+    }
+
     @Override
     public void run(){
-
-        createChunks();
-        Scheduler Schedule = new Scheduler(num_threads,"static",chunk_array);
-        Schedule.run();
-        futures = Schedule.getFutures();
-        boolean running = true;
-        int done_task = 0;
-        while(running){
+        exit = false;
+        while(!exit) {
+            createChunks();
+            Scheduler Schedule = new Scheduler(num_threads,"static",chunk_array);
+            Schedule.run();
+            futures = Schedule.getFutures();
+            boolean running = true;
+            int done_task = 0;
+            while(running){
             /*try {
                 Thread.sleep(100);
             }catch (Exception e){
@@ -53,40 +60,40 @@ public class Chunking implements Runnable{
             }*/
 
 
-            if(done_task == futures.size()){
-                running = false;
-            }
-
-            done_task = 0;
-            for (int i = 0; i < futures.size(); i++) {
-                if(futures.get(i).isDone()){
-                    done_task++;
+                if(done_task == futures.size()){
+                    running = false;
                 }
-            }
 
-            try {
-                Thread.sleep(1);
-                Platform.runLater(() -> {
-                    synchronized(chunk_array) {
-                        imageView.setImage(img);
+                done_task = 0;
+                for (int i = 0; i < futures.size(); i++) {
+                    if(futures.get(i).isDone()){
+                        done_task++;
                     }
-                });
+                }
 
-            } catch (Exception e) {
+                try {
+                    Thread.sleep(1);
+                    Platform.runLater(() -> {
+                        synchronized(chunk_array) {
+                            imageView.setImage(img);
+                        }
+                    });
 
-            }
+                } catch (Exception e) {
 
-            synchronized(chunk_array) {
-                for (int k = 0; k < chunk_array.length; k++) {
-                    for (int j = 0; j < chunk_array[k].getsize(); j++) {
-                        if (chunk_array[k].getPixel(j).getColour() == "0xFFFFFF") {
-                            continue;
-                        } else {
-                            pw.setColor(chunk_array[k].getPixel(j).getX(), chunk_array[k].getPixel(j).getY(), Color.web(chunk_array[k].getPixel(j).getColour()));
+                }
+
+                synchronized(chunk_array) {
+                    for (int k = 0; k < chunk_array.length; k++) {
+                        for (int j = 0; j < chunk_array[k].getsize(); j++) {
+                            if (chunk_array[k].getPixel(j).getColour() == "0xFFFFFF") {
+                                continue;
+                            } else {
+                                pw.setColor(chunk_array[k].getPixel(j).getX(), chunk_array[k].getPixel(j).getY(), Color.web(chunk_array[k].getPixel(j).getColour()));
+                            }
                         }
                     }
                 }
-            }
 
             /*try {
                 Platform.runLater(() -> {
@@ -98,17 +105,19 @@ public class Chunking implements Runnable{
             } catch (Exception e) {
 
             }*/
-        }
+            }
 
-        //tells the javaFX GUI thread to update the image.
-        try {
-            Platform.runLater(() -> {
-                synchronized(chunk_array) {
-                    imageView.setImage(img);
-                }
-            });
-        }catch (Exception e){
+            //tells the javaFX GUI thread to update the image.
+            try {
+                Platform.runLater(() -> {
+                    synchronized(chunk_array) {
+                        imageView.setImage(img);
+                    }
+                });
+            }catch (Exception e){
 
+            }
+            exit = true;
         }
     }
 
