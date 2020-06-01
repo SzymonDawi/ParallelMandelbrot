@@ -73,7 +73,7 @@ public class MandelbrotGUIController implements Initializable {
             shownImage.setImage(img);
 
             //this creates a new chunking instance and puts it on separate thread
-            Chunking t1 = new Chunking(shownImage,schedulingComboBoxSelection,Integer.parseInt(threadsComboBoxSelection));
+            Chunking t1 = new Chunking(shownImage,schedulingComboBoxSelection, threadsComboBoxSelection);
             Thread th = new Thread(t1);
             th.setDaemon(true);
             startTime = System.nanoTime();
@@ -136,6 +136,7 @@ public class MandelbrotGUIController implements Initializable {
         actualTimeElapsed.setText("");
 
         //initialise threadsChoiceBox options
+        threadsComboBox.getItems().add("True Sequential");
         for(int i = 1; i <= findNumberOfCores(); i++) {
             threadsComboBox.getItems().add(i);
         }

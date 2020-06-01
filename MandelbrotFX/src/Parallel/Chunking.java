@@ -20,6 +20,7 @@ public class Chunking implements Runnable{
     //the class controls the chunking and initialises the scheduler.
     private chunk chunk_array[];
     private String chunkMethod = "block";
+    private String string_num_threads;
     private int num_threads;
     private int height = 720;
     private int width = 1280;
@@ -31,28 +32,37 @@ public class Chunking implements Runnable{
 
     private volatile static boolean exit = false;
 
-    public Chunking(ImageView imageView, String chunkMethod, int num_threads) {
+    public Chunking(ImageView imageView, String chunkMethod, String string_num_threads) {
         this.imageView = imageView;
         this.chunkMethod = chunkMethod;
-        this.num_threads = num_threads;
-        chunk_array = new chunk[num_threads];
+        this.string_num_threads = string_num_threads;
+        if(string_num_threads.equals("True Sequential")) {
+
+        } else {
+            this.num_threads = Integer.parseInt(string_num_threads);
+            chunk_array = new chunk[num_threads];
+        }
     }
 
+    //allow us to exit loop when user presses stop
     public static void setExit(boolean exitStatus) {
         exit = exitStatus;
     }
 
     @Override
     public void run(){
-        exit = false;
-        while(!exit) {
-            createChunks();
-            Scheduler Schedule = new Scheduler(num_threads,"static",chunk_array);
-            Schedule.run();
-            futures = Schedule.getFutures();
-            boolean running = true;
-            int done_task = 0;
-            while(running){
+        if(string_num_threads.equals("True Sequential")) {
+            System.out.println("Ran True Sequential");
+        } else {
+            exit = false;
+            while(!exit) {
+                createChunks();
+                Scheduler Schedule = new Scheduler(num_threads,"static",chunk_array);
+                Schedule.run();
+                futures = Schedule.getFutures();
+                boolean running = true;
+                int done_task = 0;
+                while(running){
             /*try {
                 Thread.sleep(100);
             }catch (Exception e){
@@ -60,40 +70,40 @@ public class Chunking implements Runnable{
             }*/
 
 
-                if(done_task == futures.size()){
-                    running = false;
-                }
-
-                done_task = 0;
-                for (int i = 0; i < futures.size(); i++) {
-                    if(futures.get(i).isDone()){
-                        done_task++;
+                    if(done_task == futures.size()){
+                        running = false;
                     }
-                }
 
-                try {
-                    Thread.sleep(1);
-                    Platform.runLater(() -> {
-                        synchronized(chunk_array) {
-                            imageView.setImage(img);
+                    done_task = 0;
+                    for (int i = 0; i < futures.size(); i++) {
+                        if(futures.get(i).isDone()){
+                            done_task++;
                         }
-                    });
+                    }
 
-                } catch (Exception e) {
+                    try {
+                        Thread.sleep(1);
+                        Platform.runLater(() -> {
+                            synchronized(chunk_array) {
+                                imageView.setImage(img);
+                            }
+                        });
 
-                }
+                    } catch (Exception e) {
 
-                synchronized(chunk_array) {
-                    for (int k = 0; k < chunk_array.length; k++) {
-                        for (int j = 0; j < chunk_array[k].getsize(); j++) {
-                            if (chunk_array[k].getPixel(j).getColour() == "0xFFFFFF") {
-                                continue;
-                            } else {
-                                pw.setColor(chunk_array[k].getPixel(j).getX(), chunk_array[k].getPixel(j).getY(), Color.web(chunk_array[k].getPixel(j).getColour()));
+                    }
+
+                    synchronized(chunk_array) {
+                        for (int k = 0; k < chunk_array.length; k++) {
+                            for (int j = 0; j < chunk_array[k].getsize(); j++) {
+                                if (chunk_array[k].getPixel(j).getColour() == "0xFFFFFF") {
+                                    continue;
+                                } else {
+                                    pw.setColor(chunk_array[k].getPixel(j).getX(), chunk_array[k].getPixel(j).getY(), Color.web(chunk_array[k].getPixel(j).getColour()));
+                                }
                             }
                         }
                     }
-                }
 
             /*try {
                 Platform.runLater(() -> {
@@ -105,19 +115,20 @@ public class Chunking implements Runnable{
             } catch (Exception e) {
 
             }*/
-            }
+                }
 
-            //tells the javaFX GUI thread to update the image.
-            try {
-                Platform.runLater(() -> {
-                    synchronized(chunk_array) {
-                        imageView.setImage(img);
-                    }
-                });
-            }catch (Exception e){
+                //tells the javaFX GUI thread to update the image.
+                try {
+                    Platform.runLater(() -> {
+                        synchronized(chunk_array) {
+                            imageView.setImage(img);
+                        }
+                    });
+                }catch (Exception e){
 
+                }
+                exit = true;
             }
-            exit = true;
         }
     }
 
