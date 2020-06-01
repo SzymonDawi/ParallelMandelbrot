@@ -56,38 +56,48 @@ public class MandelbrotGUIController implements Initializable {
     @FXML private ImageView shownImage;
 
     public void pressStartButton(ActionEvent event) {
-        chunkSizeSelection = (int)chunkSizeSlider.getValue();
-        WritableImage img = new WritableImage(1280, 720);
-        PixelWriter pw  = img.getPixelWriter();
+        if(startButton.getText().equals("Start Parallelising Mandelbrot")) {
+            //timeElapsed = "RUNNING...";
+            startButton.setText("Stop");
+            startButton.setStyle("-fx-background-color: #eb4034; -fx-border-style: solid; -fx-border-radius: 3 3 3 3;");
+            chunkSizeSelection = (int)chunkSizeSlider.getValue();
+            WritableImage img = new WritableImage(1280, 720);
+            PixelWriter pw  = img.getPixelWriter();
 
-        for(int i = 0; i < 720; i++){
-            for(int j = 0; j <1280; j++){
-                pw.setColor(j, i, Color.WHITE);
+            for(int i = 0; i < 720; i++){
+                for(int j = 0; j <1280; j++){
+                    pw.setColor(j, i, Color.WHITE);
+                }
             }
+
+            shownImage.setImage(img);
+
+            //this creates a new chunking instance and puts it on separate thread
+            Chunking t1 = new Chunking(shownImage,schedulingComboBoxSelection, threadsComboBoxSelection);
+            Thread th = new Thread(t1);
+            th.setDaemon(true);
+            startTime = System.nanoTime();
+            th.start();
+            try {
+                //notify when thread has ended
+                th.join();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            endTime = System.nanoTime();
+            timeElapsed = (TimeUnit.MILLISECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS)/1000.000);
+            setElapsedTime();
+
+            System.out.println("view selection: " + viewSelection);
+            System.out.println("chunk size: " + chunkSizeSelection);
+            System.out.println("scheduling policy: " + schedulingComboBoxSelection);
+            System.out.println("number of threads: " + threadsComboBoxSelection);
+        } else {
+            Parallel.Chunking.setExit(true);
+            //timeElapsed = "DNF";
         }
-
-        shownImage.setImage(img);
-
-        //this creates a new chunking instance and puts it on separate thread
-        Chunking t1 = new Chunking(shownImage,schedulingComboBoxSelection,Integer.parseInt(threadsComboBoxSelection));
-        Thread th = new Thread(t1);
-        th.setDaemon(true);
-        startTime = System.nanoTime();
-        th.start();
-        try {
-            //notify when thread has ended
-            th.join();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        endTime = System.nanoTime();
-        timeElapsed = (TimeUnit.MILLISECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS)/1000.000);
-        setElapsedTime();
-        System.out.println("view selection: " + viewSelection);
-        System.out.println("chunk size: " + chunkSizeSelection);
-        System.out.println("scheduling policy: " + schedulingComboBoxSelection);
-        System.out.println("number of threads: " + threadsComboBoxSelection);
-
+        startButton.setText("Start Parallelising Mandelbrot");
+        startButton.setStyle("-fx-background-color: #48c400; -fx-border-style: solid; -fx-border-radius: 3 3 3 3;");
     }
     public void updateViewSelection(ActionEvent event) {
         viewSelection = viewComboBox.getValue().toString();
@@ -126,6 +136,7 @@ public class MandelbrotGUIController implements Initializable {
         actualTimeElapsed.setText("");
 
         //initialise threadsChoiceBox options
+        threadsComboBox.getItems().add("True Sequential");
         for(int i = 1; i <= findNumberOfCores(); i++) {
             threadsComboBox.getItems().add(i);
         }
