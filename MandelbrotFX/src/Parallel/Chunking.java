@@ -19,8 +19,10 @@ public class Chunking implements Runnable{
     private final int height = 720;
     private final int width = 1280;
     private final ImageView imageView;
-    private final WritableImage img = new WritableImage(1280, 720);
-    private final PixelWriter pw  = img.getPixelWriter();
+    private final WritableImage mandelbrotImage = new WritableImage(1280, 720);
+    private final PixelWriter mandelbrotPixelWriter = mandelbrotImage.getPixelWriter();
+    private final WritableImage visualisationImage = new WritableImage(1280, 720);
+    private final PixelWriter visualisationPixelWriter  = visualisationImage.getPixelWriter();
 
     private volatile static boolean exit = false;
 
@@ -79,25 +81,27 @@ public class Chunking implements Runnable{
                         Thread.sleep(1);
                         Platform.runLater(() -> {
                             synchronized(chunk_array) {
-                                imageView.setImage(img);
+                                if(viewSelection.equals("Mandelbrot")) {
+                                    imageView.setImage(mandelbrotImage);
+                                } else {
+                                    imageView.setImage(visualisationImage);
+                                }
                             }
                         });
 
                     } catch (Exception ignored) {
 
                     }
-
-                    synchronized(chunk_array) {
-                        for (Parallel.chunk chunk : chunk_array) {
-                            for (int j = 0; j < chunk.getSize(); j++) {
-                                if (!chunk.getPixel(j).getColour().equals("0xFFFFFF")) {
-
-                                    pw.setColor(chunk.getPixel(j).getX(), chunk.getPixel(j).getY(), Color.web(chunk.getPixel(j).getColour()));
+                        synchronized(chunk_array) {
+                            for (Parallel.chunk chunk : chunk_array) {
+                                for (int j = 0; j < chunk.getSize(); j++) {
+                                    if (!chunk.getPixel(j).getColour().equals("0xFFFFFF")) {
+                                        visualisationPixelWriter.setColor(chunk.getPixel(j).getX(), chunk.getPixel(j).getY(), Color.web(chunk.getPixel(j).getVisualisationColour()));
+                                        mandelbrotPixelWriter.setColor(chunk.getPixel(j).getX(), chunk.getPixel(j).getY(), Color.web(chunk.getPixel(j).getColour()));
+                                    }
                                 }
                             }
                         }
-                    }
-
             /*try {
                 Platform.runLater(() -> {
                     synchronized(chunk_array) {
@@ -114,7 +118,11 @@ public class Chunking implements Runnable{
                 try {
                     Platform.runLater(() -> {
                         synchronized(chunk_array) {
-                            imageView.setImage(img);
+                            if(viewSelection.equals("Mandelbrot")) {
+                                imageView.setImage(mandelbrotImage);
+                            } else {
+                                imageView.setImage(visualisationImage);
+                            }
                         }
                     });
                 }catch (Exception e) {
