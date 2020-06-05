@@ -118,6 +118,17 @@ public class MandelbrotGUIController implements Initializable {
     public void updateSchedulingComboBoxSelection(ActionEvent event)
     {
         schedulingComboBoxSelection = schedulingComboBox.getValue().toString();
+        if(schedulingComboBoxSelection.equals("Guided")) {
+            chunkMethodComboBox.setVisible(false);
+            chunkSizeComboBox.setVisible(false);
+            chunkMethodLabel.setVisible(false);
+            chunkSizeLabel.setVisible(false);
+        } else {
+            chunkMethodComboBox.setVisible(true);
+            chunkSizeComboBox.setVisible(true);
+            chunkMethodLabel.setVisible(true);
+            chunkSizeLabel.setVisible(true);
+        }
     }
 
     public void updateThreadsComboBoxSelection(ActionEvent event)
@@ -193,7 +204,7 @@ public class MandelbrotGUIController implements Initializable {
 
         //initialise startButton
         startButton.setText("Start Parallelising Mandelbrot");
-        
+
         //File file = new File("mandelbrot.png");
         //Image image = new Image(file.toURI().toString());
         //shownImage.setImage(image);
