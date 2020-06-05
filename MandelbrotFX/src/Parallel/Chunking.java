@@ -2,10 +2,12 @@ package Parallel;
 
 import javafx.application.Platform;
 import javafx.scene.image.*;
+import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 public class Chunking implements Runnable{
     //the class controls the chunking and initialises the scheduler.
@@ -23,16 +25,21 @@ public class Chunking implements Runnable{
     private final PixelWriter mandelbrotPixelWriter = mandelbrotImage.getPixelWriter();
     private final WritableImage visualisationImage = new WritableImage(1280, 720);
     private final PixelWriter visualisationPixelWriter  = visualisationImage.getPixelWriter();
+    private long startTime;
+    private Label actualTimeElapsed;
+    private double timeElapsed;
+    private long endTime;
 
     private volatile static boolean exit = false;
 
-    public Chunking(ImageView imageView, String schedulingPolicy, String string_num_threads, int chunkSize, String chunkMethod, String viewSelection) {
+    public Chunking(Label actualTimeElapsed, ImageView imageView, String schedulingPolicy, String string_num_threads, int chunkSize, String chunkMethod, String viewSelection) {
         this.imageView = imageView;
         this.schedulingPolicy = schedulingPolicy;
         this.string_num_threads = string_num_threads;
         this.chunkMethod = chunkMethod;
         this.chunkSize = chunkSize;
         this.viewSelection = viewSelection;
+        this.actualTimeElapsed = actualTimeElapsed;
         if(string_num_threads.equals("True Sequential")) {
             //TODO: true sequential code
         } else {
@@ -46,6 +53,7 @@ public class Chunking implements Runnable{
 
     @Override
     public void run(){
+        startTime = System.nanoTime();
         if(string_num_threads.equals("True Sequential")) {
             //TODO: true sequential code
             System.out.println("Ran True Sequential");
@@ -86,6 +94,9 @@ public class Chunking implements Runnable{
                                 } else {
                                     imageView.setImage(visualisationImage);
                                 }
+                                endTime = System.nanoTime();
+                                timeElapsed = (TimeUnit.MILLISECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS)/1000.000);
+                                actualTimeElapsed.setText(timeElapsed + "s");
                             }
                         });
 
@@ -123,6 +134,9 @@ public class Chunking implements Runnable{
                             } else {
                                 imageView.setImage(visualisationImage);
                             }
+                            endTime = System.nanoTime();
+                            timeElapsed = (TimeUnit.MILLISECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS)/1000.000);
+                            actualTimeElapsed.setText(timeElapsed + "s");
                         }
                     });
                 }catch (Exception e) {
