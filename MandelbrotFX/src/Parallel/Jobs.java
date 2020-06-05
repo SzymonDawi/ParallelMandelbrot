@@ -22,6 +22,18 @@ public class Jobs implements Runnable{
         this.latch = latch;
     }
 
+    private String getThreadNumberColour(int threadNumber) {
+        switch ((threadNumber) % 32) {
+            case 0:
+                return "#000000";
+            case 1:
+                return "#2F4F4F";
+            case 3:
+                return "#708090";
+        }
+        return "lol";
+    }
+
     @Override
     public void run(){
         try{
@@ -63,6 +75,8 @@ public class Jobs implements Runnable{
                 } else {
                     c.getPixel(i).setColour("0x000000");
                 }
+
+                c.getPixel(i).setVisualisationColour(getThreadNumberColour(id_task));
             }
         }
         System.out.println("Task " + id_task + " is done");
