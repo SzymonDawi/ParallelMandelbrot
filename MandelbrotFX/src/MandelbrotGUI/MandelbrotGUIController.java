@@ -32,9 +32,12 @@ public class MandelbrotGUIController implements Initializable {
     @FXML private Label schedulingLabel;
 
     //setting up chunk size elements
-    @FXML private Slider chunkSizeSlider;
-    @FXML private Label chunkLabel;
-    @FXML private Label labelPlaceHolder;
+    @FXML private ComboBox chunkMethodComboBox;
+    @FXML private ComboBox chunkSizeComboBox;
+    @FXML private Label chunkMethodLabel;
+    @FXML private Label chunkSizeLabel;
+    //@FXML private Label labelPlaceHolder;
+    private String chunkMethodSelection;
     private int chunkSizeSelection;
 
     //Setting up view
@@ -60,7 +63,7 @@ public class MandelbrotGUIController implements Initializable {
             //timeElapsed = "RUNNING...";
             startButton.setText("Stop");
             startButton.setStyle("-fx-background-color: #eb4034; -fx-border-style: solid; -fx-border-radius: 3 3 3 3;");
-            chunkSizeSelection = (int)chunkSizeSlider.getValue();
+            chunkSizeSelection = Integer.parseInt(chunkSizeComboBox.getValue().toString());
             WritableImage img = new WritableImage(1280, 720);
             PixelWriter pw  = img.getPixelWriter();
 
@@ -104,7 +107,12 @@ public class MandelbrotGUIController implements Initializable {
     }
 
     public void updateChunkSizeSelection(ActionEvent event) {
-        chunkSizeSelection = (int)chunkSizeSlider.getValue();
+        chunkSizeSelection = Integer.parseInt(chunkSizeComboBox.getValue().toString());
+    }
+
+    public void updateChunkMethodSelection(ActionEvent event) {
+        chunkMethodSelection = chunkMethodComboBox.getValue().toString();
+        addItemsToChunkingMethodComboBox();
     }
 
     public void updateSchedulingComboBoxSelection(ActionEvent event)
@@ -125,12 +133,27 @@ public class MandelbrotGUIController implements Initializable {
         numberOfCores = Runtime.getRuntime().availableProcessors();
         return numberOfCores;
     }
+
+    private void addItemsToChunkingMethodComboBox() {
+        if(chunkMethodSelection.equals("by Row")) {
+            for(int i = 1; i <=720; i++) {
+                chunkSizeComboBox.getItems().add(i);
+            }
+        } else {
+            for(int i = 1; i <=1280; i++) {
+                chunkSizeComboBox.getItems().add(i);
+            }
+        }
+        chunkSizeComboBox.setValue(1);
+    }
+
     @Override
     @FXML public void initialize(URL url, ResourceBundle rb) {
         //initialise labels
         threadsLabel.setText("Number of Threads");
         schedulingLabel.setText("Scheduling Policy");
-        chunkLabel.setText("Chunk Size: ");
+        chunkSizeLabel.setText("Chunk Size:");
+        chunkMethodLabel.setText("Chunk Method:");
         timeElapsedLabel.setText("Time elapsed:");
         viewLabel.setText("Change Image View");
         actualTimeElapsed.setText("");
@@ -146,15 +169,15 @@ public class MandelbrotGUIController implements Initializable {
         schedulingComboBox.getItems().addAll("Static-block","Static-Cyclic", "Dynamic", "Guided");
         schedulingComboBox.setValue("Static-block");
 
-        //initialise chunkSizeSlider
-        chunkSizeSlider.setMin(1);
-        chunkSizeSlider.setMax(460800);
-        chunkSizeSlider.setValue(1);
-        chunkSizeSlider.setShowTickLabels(true);
-        chunkSizeSlider.setShowTickMarks(true);
-        chunkSizeSlider.setMajorTickUnit(76800);
-        //chunkSizeSlider.setMinorTickCount(10);
-        chunkSizeSlider.setBlockIncrement(10);
+        //initialise chunkMethodComboBox
+        chunkMethodComboBox.getItems().addAll("by Row", "by Column");
+        chunkMethodComboBox.setValue("by Row");
+
+        //initialise chunkSizeComboBox
+        for(int i = 1; i <=720; i++) {
+            chunkSizeComboBox.getItems().add(i);
+        }
+        chunkSizeComboBox.setValue(1);
 
         //initialise viewCheckBox
         viewComboBox.getItems().addAll("Mandelbrot", "Parallel Visualisation");
@@ -163,20 +186,14 @@ public class MandelbrotGUIController implements Initializable {
         //initialise variables
         threadsComboBoxSelection = threadsComboBox.getValue().toString();
         schedulingComboBoxSelection = schedulingComboBox.getValue().toString();
-        chunkSizeSelection = (int)chunkSizeSlider.getValue();
+        //chunkSizeSelection = (int)chunkSizeSlider.getValue();
         viewSelection = viewComboBox.getValue().toString();
-
-        labelPlaceHolder.textProperty().bind(
-                Bindings.format(
-                        "%.0f",
-                        chunkSizeSlider.valueProperty()
-                )
-        );
+        chunkMethodSelection = chunkMethodComboBox.getValue().toString();
+        chunkSizeSelection = Integer.parseInt(chunkSizeComboBox.getValue().toString());
 
         //initialise startButton
         startButton.setText("Start Parallelising Mandelbrot");
-
-
+        
         //File file = new File("mandelbrot.png");
         //Image image = new Image(file.toURI().toString());
         //shownImage.setImage(image);
