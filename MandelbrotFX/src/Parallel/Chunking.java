@@ -86,17 +86,31 @@ public class Chunking implements Runnable{
                     } catch (Exception ignored) {
 
                     }
+                    if(viewSelection.equals("Start Parallelising Mandelbrot")) {
+                        synchronized(chunk_array) {
+                            for (Parallel.chunk chunk : chunk_array) {
+                                for (int j = 0; j < chunk.getSize(); j++) {
+                                    if (!chunk.getPixel(j).getColour().equals("0xFFFFFF")) {
 
-                    synchronized(chunk_array) {
-                        for (Parallel.chunk chunk : chunk_array) {
-                            for (int j = 0; j < chunk.getSize(); j++) {
-                                if (!chunk.getPixel(j).getColour().equals("0xFFFFFF")) {
+                                        pw.setColor(chunk.getPixel(j).getX(), chunk.getPixel(j).getY(), Color.web(chunk.getPixel(j).getColour()));
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        //TODO: add code that shows visualisation
+                        synchronized(chunk_array) {
+                            for (Parallel.chunk chunk : chunk_array) {
+                                for (int j = 0; j < chunk.getSize(); j++) {
+                                    if (!chunk.getPixel(j).getColour().equals("0xFFFFFF")) {
 
-                                    pw.setColor(chunk.getPixel(j).getX(), chunk.getPixel(j).getY(), Color.web(chunk.getPixel(j).getColour()));
+                                        pw.setColor(chunk.getPixel(j).getX(), chunk.getPixel(j).getY(), Color.web(chunk.getPixel(j).getColour()));
+                                    }
                                 }
                             }
                         }
                     }
+
 
             /*try {
                 Platform.runLater(() -> {
