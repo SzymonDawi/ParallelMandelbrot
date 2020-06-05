@@ -76,7 +76,7 @@ public class MandelbrotGUIController implements Initializable {
             shownImage.setImage(img);
 
             //this creates a new chunking instance and puts it on separate thread
-            Chunking t1 = new Chunking(shownImage,schedulingComboBoxSelection, threadsComboBoxSelection);
+            Chunking t1 = new Chunking(shownImage, schedulingComboBoxSelection, threadsComboBoxSelection, chunkSizeSelection, chunkMethodSelection, viewSelection);
             Thread th = new Thread(t1);
             th.setDaemon(true);
             startTime = System.nanoTime();

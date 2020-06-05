@@ -10,9 +10,12 @@ import java.util.concurrent.Future;
 public class Chunking implements Runnable{
     //the class controls the chunking and initialises the scheduler.
     private ArrayList<chunk> chunk_array;
-    private String chunkMethod = "block";
+    private String schedulingPolicy = "block";
     private final String string_num_threads;
     private int num_threads;
+    private final int chunkSize;
+    private final String chunkMethod;
+    private final String viewSelection;
     private final int height = 720;
     private final int width = 1280;
     private final ImageView imageView;
@@ -21,10 +24,13 @@ public class Chunking implements Runnable{
 
     private volatile static boolean exit = false;
 
-    public Chunking(ImageView imageView, String chunkMethod, String string_num_threads) {
+    public Chunking(ImageView imageView, String schedulingPolicy, String string_num_threads, int chunkSize, String chunkMethod, String viewSelection) {
         this.imageView = imageView;
-        this.chunkMethod = chunkMethod;
+        this.schedulingPolicy = schedulingPolicy;
         this.string_num_threads = string_num_threads;
+        this.chunkMethod = chunkMethod;
+        this.chunkSize = chunkSize;
+        this.viewSelection = viewSelection;
         if(string_num_threads.equals("True Sequential")) {
             //TODO: true sequential code
         } else {
@@ -39,11 +45,12 @@ public class Chunking implements Runnable{
     @Override
     public void run(){
         if(string_num_threads.equals("True Sequential")) {
+            //TODO: true sequential code
             System.out.println("Ran True Sequential");
         } else {
             exit = false;
             while(!exit) {
-                createChunks("by col"); //TODO: not hardcoded
+                createChunks(chunkMethod);
                 Scheduler Schedule = new Scheduler(num_threads,"static",chunk_array);
                 Schedule.run();
                 List<Future<?>> futures = Schedule.getFutures();
@@ -121,7 +128,7 @@ public class Chunking implements Runnable{
     public void createChunks(String type){
         //chunks the data.
 
-        switch (chunkMethod) {
+        switch (schedulingPolicy) {
             case "Static-block":
                 blockChunking(type);
                 break;
@@ -129,7 +136,7 @@ public class Chunking implements Runnable{
                 cyclicChunking(type);
                 break;
             case "Dynamic":
-                dynamicChunking(type,2);  //TODO: not hardcoded
+                dynamicChunking(type, chunkSize);
                 break;
             case "Guided":
                 guidedChunking(type);
@@ -143,7 +150,7 @@ public class Chunking implements Runnable{
 
     private chunk chunkType(String type, int currentPos) {
         chunk currentChunk = new chunk();
-        if (type.equals("by row")) {
+        if (type.equals("by Row")) {
             for (int j = 0; j < width; j++) {
                 currentChunk.add(j, currentPos);
             }
@@ -177,7 +184,7 @@ public class Chunking implements Runnable{
     private void cyclicChunking(String type){
         int currentCore = 0;
         int max;
-        if(type.equals("by row"))max = height;else max = width;
+        if(type.equals("by Row"))max = height;else max = width;
 
         for (int c=0;c<num_threads;c++){
             chunk_array.add(new chunk());
@@ -194,7 +201,7 @@ public class Chunking implements Runnable{
         int index =0;
         int count = 0;
         int chunkArrayPos = 0;
-        if(type.equals("by row")) max = height; else max = width;
+        if(type.equals("by Row")) max = height; else max = width;
         while (index<max){
             while(count<chunkSize){
                 if(count == 0 ){
@@ -220,7 +227,7 @@ public class Chunking implements Runnable{
         int count = 0;
         int i = 0;
         int chunkArrayPos = 0;
-        if(type.equals("by row")) max = height; else max = width;
+        if(type.equals("by Row")) max = height; else max = width;
         while (index<max){
             while(count<chunkSize){
                 if(count ==0){
