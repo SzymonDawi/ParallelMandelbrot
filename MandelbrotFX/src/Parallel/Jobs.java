@@ -18,7 +18,7 @@ public class Jobs implements Runnable{
         id_task = id;
         this.iteration_num = iteration_num;
         this.c = c;
-        size = c.getsize();
+        size = c.getSize();
         this.latch = latch;
     }
 

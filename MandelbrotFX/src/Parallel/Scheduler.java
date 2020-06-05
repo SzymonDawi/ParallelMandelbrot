@@ -8,14 +8,12 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.CountDownLatch;
 
 public class Scheduler implements Runnable{
-    private int num_threads = 0;
-    private chunk chunk_array[];
+    private final ArrayList<chunk> chunk_array;
     private int num_jobs = 0;
-    private ScheduledExecutorService scheduler;
-    private List<Future<?>> futures = new ArrayList<Future<?>>();
+    private final ScheduledExecutorService scheduler;
+    private final List<Future<?>> futures = new ArrayList<Future<?>>();
 
-    public Scheduler(int num_threads, String type, chunk chunkArray[]){
-        this.num_threads = num_threads;
+    public Scheduler(int num_threads, String type, ArrayList<chunk> chunkArray){
         chunk_array = chunkArray;
         scheduler = Executors.newScheduledThreadPool(num_threads);
     }
@@ -25,8 +23,9 @@ public class Scheduler implements Runnable{
         //assigns the jobs to threads and starts them all at the same time.
         CountDownLatch latch = new CountDownLatch(1);
         synchronized(chunk_array) {
-            for (int i = 0; i < num_threads; i++) {
-                Jobs task = new Jobs(num_jobs, 10000, chunk_array[i], latch);
+            System.out.println(chunk_array.size());
+            for (Parallel.chunk chunk : chunk_array) {
+                Jobs task = new Jobs(num_jobs, 10000, chunk, latch);
                 Future<?> f = scheduler.submit(task);
                 futures.add(f);
                 num_jobs++;

@@ -4,7 +4,12 @@ import java.util.ArrayList;
 
 public class chunk {
     //A list of all the pixels in the chunk
-    private ArrayList<pixel> chunk_list;
+    private final ArrayList<pixel> chunk_list;
+
+    private ArrayList<pixel> getArray(){
+        return chunk_list;
+
+    }
 
     public chunk(){
         chunk_list = new ArrayList<pixel>();
@@ -20,7 +25,12 @@ public class chunk {
         return chunk_list.get(i);
     }
 
-    public int getsize(){
+    public int getSize(){
         return chunk_list.size();
+    }
+
+    public void appendChunks(chunk newChunk){
+        chunk_list.addAll(chunk_list.size(),newChunk.getArray());
+
     }
 }

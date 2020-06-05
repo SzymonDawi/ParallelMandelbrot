@@ -1,8 +1,8 @@
 package Parallel;
 
 public class pixel {
-    private int x;
-    private int y;
+    private final int x;
+    private final int y;
     private String colour;
 
     public pixel(int x, int y){
