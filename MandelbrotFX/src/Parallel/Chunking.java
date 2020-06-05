@@ -29,10 +29,11 @@ public class Chunking implements Runnable{
     private Label actualTimeElapsed;
     private double timeElapsed;
     private long endTime;
+    private int numberOfIterations;
 
     private volatile static boolean exit = false;
 
-    public Chunking(Label actualTimeElapsed, ImageView imageView, String schedulingPolicy, String string_num_threads, int chunkSize, String chunkMethod, String viewSelection) {
+    public Chunking(int numberOfIterations, Label actualTimeElapsed, ImageView imageView, String schedulingPolicy, String string_num_threads, int chunkSize, String chunkMethod, String viewSelection) {
         this.imageView = imageView;
         this.schedulingPolicy = schedulingPolicy;
         this.string_num_threads = string_num_threads;
@@ -40,6 +41,7 @@ public class Chunking implements Runnable{
         this.chunkSize = chunkSize;
         this.viewSelection = viewSelection;
         this.actualTimeElapsed = actualTimeElapsed;
+        this.numberOfIterations = numberOfIterations;
         if(string_num_threads.equals("True Sequential")) {
             //TODO: true sequential code
         } else {
@@ -61,7 +63,7 @@ public class Chunking implements Runnable{
             exit = false;
             while(!exit) {
                 createChunks(chunkMethod);
-                Scheduler Schedule = new Scheduler(num_threads,"static",chunk_array);
+                Scheduler Schedule = new Scheduler(numberOfIterations, num_threads,"static",chunk_array);
                 Schedule.run();
                 List<Future<?>> futures = Schedule.getFutures();
                 boolean running = true;
@@ -96,7 +98,7 @@ public class Chunking implements Runnable{
                                 }
                                 endTime = System.nanoTime();
                                 timeElapsed = (TimeUnit.MILLISECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS)/1000.000);
-                                actualTimeElapsed.setText(timeElapsed + "s");
+                                actualTimeElapsed.setText("Running... " + timeElapsed + "s");
                             }
                         });
 
@@ -136,7 +138,7 @@ public class Chunking implements Runnable{
                             }
                             endTime = System.nanoTime();
                             timeElapsed = (TimeUnit.MILLISECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS)/1000.000);
-                            actualTimeElapsed.setText(timeElapsed + "s");
+                            actualTimeElapsed.setText("Running... " + timeElapsed + "s");
                         }
                     });
                 }catch (Exception e) {
@@ -144,6 +146,14 @@ public class Chunking implements Runnable{
                 }
                 exit = true;
             }
+            try {
+                Platform.runLater(() -> {
+                    actualTimeElapsed.setText("Finished after " + timeElapsed + "s");
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
         }
     }
 
