@@ -13,6 +13,8 @@ public class Jobs implements Runnable{
     private String colours[] = {"0xE3170A", "0xF75C03", "0xFAA613", "0xF3DE2C", "0xF0F66E"};
     private CountDownLatch latch;
     private int size = 0;
+    private long numberOfThread;
+
 
     public Jobs(int id, int iteration_num, chunk c, CountDownLatch latch){
         id_task = id;
@@ -32,6 +34,7 @@ public class Jobs implements Runnable{
         }
 
         //runs mandelbrot on the chunk.
+        numberOfThread = Thread.currentThread().getId();
         System.out.println("Task "+id_task+" is running");
         for (int i = 0; i < size; i++) {
             synchronized(c) {
@@ -63,8 +66,8 @@ public class Jobs implements Runnable{
                 } else {
                     c.getPixel(i).setColour("0x000000");
                 }
-
-                c.getPixel(i).setVisualisationColour(getThreadNumberColour(id_task));
+                //System.out.println("ActiveThread" + Thread.currentThread().getId());
+                c.getPixel(i).setVisualisationColour(getThreadNumberColour((int)numberOfThread));
             }
         }
         System.out.println("Task " + id_task + " is done");

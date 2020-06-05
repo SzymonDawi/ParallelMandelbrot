@@ -20,6 +20,10 @@ public class Scheduler implements Runnable{
         this.numberOfIterations = numberOfIterations;
     }
 
+//    public void getNumberOfThread() {
+//        Thread.currentThread().getName();
+//    }
+
     @Override
     public void run(){
         //assigns the jobs to threads and starts them all at the same time.
