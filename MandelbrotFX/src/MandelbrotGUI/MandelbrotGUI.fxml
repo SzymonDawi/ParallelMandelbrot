@@ -13,7 +13,7 @@
          <children>
             <HBox prefHeight="64.0" prefWidth="1280.0" style="-fx-background-color: #e0e0e0;">
                <children>
-                  <VBox layoutX="10.0" layoutY="10.0" prefHeight="54.0" prefWidth="256.0">
+                  <VBox layoutX="10.0" layoutY="10.0" prefHeight="54.0" prefWidth="200.0">
                      <children>
                         <StackPane prefHeight="150.0" prefWidth="200.0">
                            <children>
@@ -25,11 +25,11 @@
                         </StackPane>
                         <StackPane prefHeight="150.0" prefWidth="200.0">
                            <children>
-                              <ComboBox fx:id="threadsComboBox" onAction="#updateThreadsComboBoxSelection" prefHeight="25.0" prefWidth="200.0" style="-fx-border-style: solid; -fx-border-radius: 3 3 3 3; -fx-background-color: #ffffff;" />
+                              <ComboBox fx:id="threadsComboBox" onAction="#updateThreadsComboBoxSelection" prefHeight="25.0" prefWidth="160.0" style="-fx-border-style: solid; -fx-border-radius: 3 3 3 3; -fx-background-color: #ffffff;" />
                            </children></StackPane>
                      </children>
                   </VBox>
-                  <VBox layoutX="10.0" layoutY="10.0" prefHeight="54.0" prefWidth="256.0">
+                  <VBox layoutX="10.0" layoutY="10.0" prefHeight="54.0" prefWidth="200.0">
                      <children>
                         <StackPane prefHeight="150.0" prefWidth="200.0">
                            <children>
@@ -39,9 +39,9 @@
                                  </font></Label>
                            </children>
                         </StackPane>
-                        <StackPane prefHeight="150.0" prefWidth="200.0">
+                        <StackPane prefHeight="150.0" prefWidth="180.0">
                            <children>
-                              <ComboBox fx:id="schedulingComboBox" onAction="#updateSchedulingComboBoxSelection" prefHeight="25.0" prefWidth="200.0" style="-fx-background-color: #ffffff; -fx-border-style: solid; -fx-border-radius: 3 3 3 3;" />
+                              <ComboBox fx:id="schedulingComboBox" onAction="#updateSchedulingComboBoxSelection" prefHeight="25.0" prefWidth="160.0" style="-fx-background-color: #ffffff; -fx-border-style: solid; -fx-border-radius: 3 3 3 3;" />
                            </children></StackPane>
                      </children>
                   </VBox>
@@ -91,7 +91,7 @@
                         </HBox>
                      </children>
                   </VBox>
-                  <VBox layoutX="10.0" layoutY="10.0" prefHeight="54.0" prefWidth="256.0">
+                  <VBox layoutX="10.0" layoutY="10.0" prefHeight="54.0" prefWidth="200.0">
                      <children>
                         <StackPane prefHeight="150.0" prefWidth="200.0">
                            <children>
@@ -103,8 +103,26 @@
                         </StackPane>
                         <StackPane prefHeight="150.0" prefWidth="200.0">
                            <children>
-                              <ComboBox fx:id="viewComboBox" onAction="#updateViewSelection" prefHeight="25.0" prefWidth="200.0" style="-fx-background-color: #ffffff; -fx-border-radius: 3 3 3 3; -fx-border-style: solid;" />
+                              <ComboBox fx:id="viewComboBox" onAction="#updateViewSelection" prefHeight="25.0" prefWidth="160.0" style="-fx-background-color: #ffffff; -fx-border-radius: 3 3 3 3; -fx-border-style: solid;" />
                            </children></StackPane>
+                     </children>
+                  </VBox>
+                  <VBox prefHeight="200.0" prefWidth="200.0">
+                     <children>
+                        <StackPane prefHeight="150.0" prefWidth="200.0">
+                           <children>
+                              <Label fx:id="numberOfIterationsLabel" alignment="CENTER" prefHeight="25.0" prefWidth="193.0" text="Number of Iterations">
+                                 <font>
+                                    <Font name="Comic Sans MS" size="12.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </StackPane>
+                        <StackPane prefHeight="150.0" prefWidth="200.0">
+                           <children>
+                              <ComboBox fx:id="numberOfIterationsComboBox" onAction="#updateNumberOfIterationsComboBoxSelection" prefHeight="25.0" prefWidth="160.0" style="-fx-border-style: solid; -fx-border-radius: 3 3 3 3; -fx-background-color: #ffffff;" />
+                           </children>
+                        </StackPane>
                      </children>
                   </VBox>
                   <VBox layoutX="10.0" layoutY="10.0" prefHeight="54.0" prefWidth="256.0">

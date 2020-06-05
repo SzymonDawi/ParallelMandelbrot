@@ -12,10 +12,12 @@ public class Scheduler implements Runnable{
     private int num_jobs = 0;
     private final ScheduledExecutorService scheduler;
     private final List<Future<?>> futures = new ArrayList<Future<?>>();
+    private int numberOfIterations;
 
-    public Scheduler(int num_threads, String type, ArrayList<chunk> chunkArray){
+    public Scheduler(int numberOfIterations, int num_threads, String type, ArrayList<chunk> chunkArray){
         chunk_array = chunkArray;
         scheduler = Executors.newScheduledThreadPool(num_threads);
+        this.numberOfIterations = numberOfIterations;
     }
 
     @Override
@@ -25,7 +27,7 @@ public class Scheduler implements Runnable{
         synchronized(chunk_array) {
             System.out.println(chunk_array.size());
             for (Parallel.chunk chunk : chunk_array) {
-                Jobs task = new Jobs(num_jobs, 10000, chunk, latch);
+                Jobs task = new Jobs(num_jobs, numberOfIterations, chunk, latch);
                 Future<?> f = scheduler.submit(task);
                 futures.add(f);
                 num_jobs++;

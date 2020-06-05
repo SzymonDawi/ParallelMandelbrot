@@ -33,6 +33,11 @@ public class MandelbrotGUIController implements Initializable {
     private int chunkSizeSelection;
 
     //Setting up view
+    @FXML private Label numberOfIterationsLabel;
+    @FXML private ComboBox numberOfIterationsComboBox;
+    private int numberOfIterationsSelection;
+
+    //Setting up view
     @FXML private Label viewLabel;
     @FXML private ComboBox viewComboBox;
     private String viewSelection;
@@ -61,7 +66,7 @@ public class MandelbrotGUIController implements Initializable {
             }
             shownImage.setImage(img);
             //this creates a new chunking instance and puts it on separate thread
-            Chunking t1 = new Chunking(actualTimeElapsed, shownImage, schedulingComboBoxSelection, threadsComboBoxSelection, chunkSizeSelection, chunkMethodSelection, viewSelection);
+            Chunking t1 = new Chunking(numberOfIterationsSelection, actualTimeElapsed, shownImage, schedulingComboBoxSelection, threadsComboBoxSelection, chunkSizeSelection, chunkMethodSelection, viewSelection);
             Thread th = new Thread(t1);
             th.setDaemon(true);
             th.start();
@@ -109,6 +114,11 @@ public class MandelbrotGUIController implements Initializable {
         threadsComboBoxSelection = threadsComboBox.getValue().toString();
     }
 
+    public void updateNumberOfIterationsComboBoxSelection(ActionEvent event)
+    {
+        numberOfIterationsSelection = Integer.parseInt(numberOfIterationsComboBox.getValue().toString());
+    }
+
     private int findNumberOfCores() {
         int numberOfCores;
         numberOfCores = Runtime.getRuntime().availableProcessors();
@@ -138,15 +148,20 @@ public class MandelbrotGUIController implements Initializable {
         timeElapsedLabel.setText("Time elapsed:");
         viewLabel.setText("Change Image View");
         actualTimeElapsed.setText("");
+        numberOfIterationsLabel.setText("Number of Iterations");
 
-        //initialise threadsChoiceBox options
+        //initialise threadsComboBox options
         threadsComboBox.getItems().add("True Sequential");
         for(int i = 1; i <= findNumberOfCores(); i++) {
             threadsComboBox.getItems().add(i);
         }
         threadsComboBox.setValue(1);
 
-        //initialise schedulingChoiceBox
+        //initialise numberOfIterationsComboBox options
+        numberOfIterationsComboBox.getItems().addAll(10, 50, 100, 500, 1000, 5000, 10000, 50000, 100000);
+        numberOfIterationsComboBox.setValue(10000);
+
+        //initialise schedulingComboBox
         schedulingComboBox.getItems().addAll("Static-block","Static-Cyclic", "Dynamic", "Guided");
         schedulingComboBox.setValue("Static-block");
 
@@ -170,6 +185,7 @@ public class MandelbrotGUIController implements Initializable {
         viewSelection = viewComboBox.getValue().toString();
         chunkMethodSelection = chunkMethodComboBox.getValue().toString();
         chunkSizeSelection = Integer.parseInt(chunkSizeComboBox.getValue().toString());
+        numberOfIterationsSelection = Integer.parseInt(numberOfIterationsComboBox.getValue().toString());
 
         //initialise startButton
         startButton.setText("Start Parallelising Mandelbrot");
