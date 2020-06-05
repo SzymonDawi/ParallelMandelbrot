@@ -22,6 +22,54 @@ public class Jobs implements Runnable{
         this.latch = latch;
     }
 
+    @Override
+    public void run(){
+        try{
+            //waiting for the 'GO' signal from the scheduler.
+            latch.await();
+        } catch(Exception e){
+            System.out.println("ERROR while awaiting latch");
+        }
+
+        //runs mandelbrot on the chunk.
+        System.out.println("Task "+id_task+" is running");
+        for (int i = 0; i < size; i++) {
+            synchronized(c) {
+                double c_re = (c.getPixel(i).getX() - width / 2.0) * 4.0 / width;
+                double c_im = (c.getPixel(i).getY() - height / 2.0) * 4.0 / width;
+                double x = 0, y = 0;
+                int iteration = 0;
+                while (x * x + y * y <= 4 && iteration < iteration_num) {
+                    double x_new = x * x - y * y + c_re;
+                    y = 2 * x * y + c_im;
+                    x = x_new;
+                    iteration++;
+                }
+
+                if (iteration < iteration_num) {
+                    //System.out.println("iteration " + iteration );
+                    if (iteration < 2) {
+                        c.getPixel(i).setColour(colours[0]);
+                    } else if (iteration < 10) {
+                        c.getPixel(i).setColour(colours[1]);
+                    } else if (iteration < 15) {
+                        c.getPixel(i).setColour(colours[2]);
+                    } else if (iteration < 25) {
+                        c.getPixel(i).setColour(colours[3]);
+                    } else {
+                        c.getPixel(i).setColour(colours[4]);
+                    }
+
+                } else {
+                    c.getPixel(i).setColour("0x000000");
+                }
+
+                c.getPixel(i).setVisualisationColour(getThreadNumberColour(id_task));
+            }
+        }
+        System.out.println("Task " + id_task + " is done");
+    }
+
     private String getThreadNumberColour(int threadNumber) {
         switch ((threadNumber) % 32) {
             case 0:
@@ -91,53 +139,5 @@ public class Jobs implements Runnable{
         }
         //unreachable
         return "#ffffff";
-    }
-
-    @Override
-    public void run(){
-        try{
-            //waiting for the 'GO' signal from the scheduler.
-            latch.await();
-        } catch(Exception e){
-            System.out.println("ERROR while awaiting latch");
-        }
-
-        //runs mandelbrot on the chunk.
-        System.out.println("Task "+id_task+" is running");
-        for (int i = 0; i < size; i++) {
-            synchronized(c) {
-                double c_re = (c.getPixel(i).getX() - width / 2.0) * 4.0 / width;
-                double c_im = (c.getPixel(i).getY() - height / 2.0) * 4.0 / width;
-                double x = 0, y = 0;
-                int iteration = 0;
-                while (x * x + y * y <= 4 && iteration < iteration_num) {
-                    double x_new = x * x - y * y + c_re;
-                    y = 2 * x * y + c_im;
-                    x = x_new;
-                    iteration++;
-                }
-
-                if (iteration < iteration_num) {
-                    //System.out.println("iteration " + iteration );
-                    if (iteration < 2) {
-                        c.getPixel(i).setColour(colours[0]);
-                    } else if (iteration < 10) {
-                        c.getPixel(i).setColour(colours[1]);
-                    } else if (iteration < 15) {
-                        c.getPixel(i).setColour(colours[2]);
-                    } else if (iteration < 25) {
-                        c.getPixel(i).setColour(colours[3]);
-                    } else {
-                        c.getPixel(i).setColour(colours[4]);
-                    }
-
-                } else {
-                    c.getPixel(i).setColour("0x000000");
-                }
-
-                c.getPixel(i).setVisualisationColour(getThreadNumberColour(id_task));
-            }
-        }
-        System.out.println("Task " + id_task + " is done");
     }
 }
