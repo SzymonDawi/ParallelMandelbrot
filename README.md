@@ -19,7 +19,12 @@ You will then be presented with a GUI, select your preferred settings and click 
     * All images are currently 1280x720 therefore you have 921,600 pixels that could be parallelised. As one thread will always have this chunk size, when you have two or more threads you will have the option from 1 to 460,800 pixels as your chunk size.
 * Change Image View
     * Here you will decide if you will see the finished image or a related image that shows what sections are being worked on at each point in time.
-    * Selecting "Mandelbrot" will show the Mandelbrot image, selecting "Parallel Visualiation" will show what threads are working on what part of the image.
+    * Selecting "Mandelbrot" will show the Mandelbrot image, selecting "Parallel Visualisation" will show what threads are working on what part of the image.
+    * At this stage colours are not set to specific threads and the different colours are maxed out 32 threads, if you use more threads, colours will repeat.
+* Change Number of Iterations
+    * Here you can select from a range between 10 and 100000 iterations to pass through the Mandelbrot set.
+    * This will be the maximum number of iterations a pixel will complete the Mandelbrot set (if not finished before then).
+    * The number of iterations will impact the time it takes to complete the tasks and the overall colours shown by the Mandelbrot Image.
 ### Technology
 * Maven
 * Java Executor and ExecutorService
