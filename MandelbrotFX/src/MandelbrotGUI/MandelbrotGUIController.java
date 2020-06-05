@@ -1,6 +1,8 @@
 package MandelbrotGUI;
 
 import Parallel.Chunking;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -10,6 +12,8 @@ import javafx.scene.paint.Color;
 
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 
@@ -51,6 +55,8 @@ public class MandelbrotGUIController implements Initializable {
 
     //set up the image that will be shown
     @FXML private ImageView shownImage;
+    private List list = new ArrayList();
+    ObservableList observableList;
 
     public void pressStartButton(ActionEvent event) {
         if(startButton.getText().equals("Start Parallelising Mandelbrot")) {
@@ -85,12 +91,16 @@ public class MandelbrotGUIController implements Initializable {
     }
 
     public void updateChunkSizeSelection(ActionEvent event) {
-        chunkSizeSelection = Integer.parseInt(chunkSizeComboBox.getValue().toString());
+        if(!(chunkSizeComboBox.getValue() == null))  {
+            chunkSizeSelection = Integer.parseInt(chunkSizeComboBox.getValue().toString());
+        } else {
+
+        }
     }
 
     public void updateChunkMethodSelection(ActionEvent event) {
         chunkMethodSelection = chunkMethodComboBox.getValue().toString();
-        addItemsToChunkingMethodComboBox();
+        addItemsToChunkSizeComboBox();
     }
 
     public void updateSchedulingComboBoxSelection(ActionEvent event)
@@ -112,6 +122,7 @@ public class MandelbrotGUIController implements Initializable {
     public void updateThreadsComboBoxSelection(ActionEvent event)
     {
         threadsComboBoxSelection = threadsComboBox.getValue().toString();
+        addItemsToChunkSizeComboBox();
     }
 
     public void updateNumberOfIterationsComboBoxSelection(ActionEvent event)
@@ -125,16 +136,24 @@ public class MandelbrotGUIController implements Initializable {
         return numberOfCores;
     }
 
-    private void addItemsToChunkingMethodComboBox() {
+    private void addItemsToChunkSizeComboBox() {
+        int threadsComboBoxSelectionInt = Integer.parseInt(threadsComboBoxSelection);
+        list.clear();
+        double maxRow = (720.00 / (double) threadsComboBoxSelectionInt);
+        double maxColumn = (1280.00 / (double) threadsComboBoxSelectionInt);
+        int maxRowCeiling = (int) Math.ceil(maxRow);
+        int maxColumnCeiling = (int) Math.ceil(maxColumn);
         if(chunkMethodSelection.equals("by Row")) {
-            for(int i = 1; i <=720; i++) {
-                chunkSizeComboBox.getItems().add(i);
+            for(int i = 1; i <= maxRowCeiling; i++) {
+                    list.add(i);
             }
         } else {
-            for(int i = 1; i <=1280; i++) {
-                chunkSizeComboBox.getItems().add(i);
+            for(int i = 1; i <= maxColumnCeiling; i++) {
+                    list.add(i);
             }
         }
+        observableList = FXCollections.observableList(list);
+        chunkSizeComboBox.setItems(observableList);
         chunkSizeComboBox.setValue(1);
     }
 
@@ -175,7 +194,7 @@ public class MandelbrotGUIController implements Initializable {
         }
         chunkSizeComboBox.setValue(1);
 
-        //initialise viewCheckBox
+        //initialise viewComboBox
         viewComboBox.getItems().addAll("Mandelbrot", "Parallel Visualisation");
         viewComboBox.setValue("Mandelbrot");
 
