@@ -54,30 +54,34 @@ public class MandelbrotGUIController implements Initializable {
     @FXML private Button startButton;
 
     //set up the image that will be shown
-    @FXML private ImageView shownImage;
+    @FXML private ImageView shownImage = new ImageView();
     private List list = new ArrayList();
     ObservableList observableList;
 
     private Chunking t1;
-
+    private  Thread th;
     public void pressStartButton(ActionEvent event) {
         if(startButton.getText().equals("Start Parallelising Mandelbrot")) {
             startButton.setText("Stop");
             startButton.setStyle("-fx-background-color: #eb4034; -fx-border-style: solid; -fx-border-radius: 3 3 3 3;");
             chunkSizeSelection = Integer.parseInt(chunkSizeComboBox.getValue().toString());
+
             WritableImage img = new WritableImage(1280, 720);
             PixelWriter pw  = img.getPixelWriter();
+
             for(int i = 0; i < 720; i++){
                 for(int j = 0; j <1280; j++){
                     pw.setColor(j, i, Color.WHITE);
                 }
             }
+
             shownImage.setImage(img);
             //this creates a new chunking instance and puts it on separate thread
             t1 = new Chunking(numberOfIterationsSelection, actualTimeElapsed, shownImage, schedulingComboBoxSelection, threadsComboBoxSelection, chunkSizeSelection, chunkMethodSelection, viewSelection);
-            Thread th = new Thread(t1);
+            th = new Thread(t1);
             th.setDaemon(true);
             th.start();
+
             System.out.println("view selection: " + viewSelection);
             System.out.println("chunk size: " + chunkSizeSelection);
             System.out.println("scheduling policy: " + schedulingComboBoxSelection);
@@ -90,7 +94,6 @@ public class MandelbrotGUIController implements Initializable {
     }
     public void updateViewSelection(ActionEvent event) {
         viewSelection = viewComboBox.getValue().toString();
-        shownImage.setImage(t1.switchView(viewSelection));
     }
 
     public void updateChunkSizeSelection(ActionEvent event) {

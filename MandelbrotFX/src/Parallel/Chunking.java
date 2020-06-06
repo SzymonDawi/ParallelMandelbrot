@@ -85,12 +85,11 @@ public class Chunking implements Runnable{
                         Thread.sleep(1);
                         Platform.runLater(() -> {
                             synchronized(chunk_array) {
-                                /*if(viewSelection.equals("Mandelbrot")) {
+                                if(viewSelection.equals("Mandelbrot")) {
                                     imageView.setImage(mandelbrotImage);
                                 } else {
                                     imageView.setImage(visualisationImage);
-                                }*/
-                                imageView.setImage(mandelbrotImage);
+                                }
                                 endTime = System.nanoTime();
                                 timeElapsed = (TimeUnit.MILLISECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS)/1000.000);
                                 actualTimeElapsed.setText("Running... " + timeElapsed + "s");
@@ -129,12 +128,11 @@ public class Chunking implements Runnable{
                 try {
                     Platform.runLater(() -> {
                         synchronized(chunk_array) {
-                            /*if(viewSelection.equals("Mandelbrot")) {
+                            if(viewSelection.equals("Mandelbrot")) {
                                 imageView.setImage(mandelbrotImage);
                             } else {
                                 imageView.setImage(visualisationImage);
-                            }*/
-                            imageView.setImage(mandelbrotImage);
+                            }
                             endTime = System.nanoTime();
                             timeElapsed = (TimeUnit.MILLISECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS)/1000.000);
                             actualTimeElapsed.setText("Running... " + timeElapsed + "s");
@@ -199,10 +197,14 @@ public class Chunking implements Runnable{
             }
             try {
                 Platform.runLater(() -> {
-                    endTime = System.nanoTime();
-                    imageView.setImage(mandelbrotImage);
-                    timeElapsed = (TimeUnit.MILLISECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS) / 1000.000);
-                    actualTimeElapsed.setText("Running... " + timeElapsed + "s");
+                        if(viewSelection.equals("Mandelbrot")) {
+                            //imageView.setImage(mandelbrotImage);
+                        } else {
+                            //imageView.setImage(visualisationImage);
+                        }
+                        endTime = System.nanoTime();
+                        timeElapsed = (TimeUnit.MILLISECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS)/1000.000);
+                        actualTimeElapsed.setText("Running... " + timeElapsed + "s");
                 });
             }catch(Exception e){
 
@@ -211,11 +213,11 @@ public class Chunking implements Runnable{
 
         try {
             Platform.runLater(() -> {
-                /*if(viewSelection.equals("Mandelbrot")) {
+                if(viewSelection.equals("Mandelbrot")) {
                     imageView.setImage(mandelbrotImage);
                 } else {
                     imageView.setImage(visualisationImage);
-                }*/
+                }
                 imageView.setImage(mandelbrotImage);
                 actualTimeElapsed.setText("Finished after " + timeElapsed + "s");
             });
