@@ -200,6 +200,7 @@ public class Chunking implements Runnable{
             try {
                 Platform.runLater(() -> {
                     endTime = System.nanoTime();
+                    imageView.setImage(mandelbrotImage);
                     timeElapsed = (TimeUnit.MILLISECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS) / 1000.000);
                     actualTimeElapsed.setText("Running... " + timeElapsed + "s");
                 });
