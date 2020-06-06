@@ -28,16 +28,21 @@ public class Scheduler implements Runnable{
     public void run(){
         //assigns the jobs to threads and starts them all at the same time.
         CountDownLatch latch = new CountDownLatch(1);
-        synchronized(chunk_array) {
-            System.out.println(chunk_array.size());
-            for (Parallel.chunk chunk : chunk_array) {
-                Jobs task = new Jobs(num_jobs, numberOfIterations, chunk, latch);
-                Future<?> f = scheduler.submit(task);
-                futures.add(f);
-                num_jobs++;
+        try{
+            synchronized(chunk_array) {
+                System.out.println(chunk_array.size());
+                for (Parallel.chunk chunk : chunk_array) {
+                    Jobs task = new Jobs(num_jobs, numberOfIterations, chunk, latch);
+                    Future<?> f = scheduler.submit(task);
+                    futures.add(f);
+                    num_jobs++;
+                }
             }
+            latch.countDown();
+        }catch (Exception e){
+
         }
-        latch.countDown();
+
     }
 
     public List<Future<?>> getFutures(){

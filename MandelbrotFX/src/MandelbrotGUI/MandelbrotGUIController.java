@@ -58,6 +58,8 @@ public class MandelbrotGUIController implements Initializable {
     private List list = new ArrayList();
     ObservableList observableList;
 
+    private Chunking t1;
+
     public void pressStartButton(ActionEvent event) {
         if(startButton.getText().equals("Start Parallelising Mandelbrot")) {
             startButton.setText("Stop");
@@ -72,7 +74,7 @@ public class MandelbrotGUIController implements Initializable {
             }
             shownImage.setImage(img);
             //this creates a new chunking instance and puts it on separate thread
-            Chunking t1 = new Chunking(numberOfIterationsSelection, actualTimeElapsed, shownImage, schedulingComboBoxSelection, threadsComboBoxSelection, chunkSizeSelection, chunkMethodSelection, viewSelection);
+            t1 = new Chunking(numberOfIterationsSelection, actualTimeElapsed, shownImage, schedulingComboBoxSelection, threadsComboBoxSelection, chunkSizeSelection, chunkMethodSelection, viewSelection);
             Thread th = new Thread(t1);
             th.setDaemon(true);
             th.start();
@@ -88,6 +90,7 @@ public class MandelbrotGUIController implements Initializable {
     }
     public void updateViewSelection(ActionEvent event) {
         viewSelection = viewComboBox.getValue().toString();
+        shownImage.setImage(t1.switchView(viewSelection));
     }
 
     public void updateChunkSizeSelection(ActionEvent event) {
@@ -137,24 +140,26 @@ public class MandelbrotGUIController implements Initializable {
     }
 
     private void addItemsToChunkSizeComboBox() {
-        int threadsComboBoxSelectionInt = Integer.parseInt(threadsComboBoxSelection);
-        list.clear();
-        double maxRow = (720.00 / (double) threadsComboBoxSelectionInt);
-        double maxColumn = (1280.00 / (double) threadsComboBoxSelectionInt);
-        int maxRowCeiling = (int) Math.ceil(maxRow);
-        int maxColumnCeiling = (int) Math.ceil(maxColumn);
-        if(chunkMethodSelection.equals("by Row")) {
-            for(int i = 1; i <= maxRowCeiling; i++) {
+        if(!threadsComboBoxSelection.equals("True Sequential")) {
+            int threadsComboBoxSelectionInt = Integer.parseInt(threadsComboBoxSelection);
+            list.clear();
+            double maxRow = (720.00 / (double) threadsComboBoxSelectionInt);
+            double maxColumn = (1280.00 / (double) threadsComboBoxSelectionInt);
+            int maxRowCeiling = (int) Math.ceil(maxRow);
+            int maxColumnCeiling = (int) Math.ceil(maxColumn);
+            if (chunkMethodSelection.equals("by Row")) {
+                for (int i = 1; i <= maxRowCeiling; i++) {
                     list.add(i);
-            }
-        } else {
-            for(int i = 1; i <= maxColumnCeiling; i++) {
+                }
+            } else {
+                for (int i = 1; i <= maxColumnCeiling; i++) {
                     list.add(i);
+                }
             }
+            observableList = FXCollections.observableList(list);
+            chunkSizeComboBox.setItems(observableList);
+            chunkSizeComboBox.setValue(1);
         }
-        observableList = FXCollections.observableList(list);
-        chunkSizeComboBox.setItems(observableList);
-        chunkSizeComboBox.setValue(1);
     }
 
     @Override
