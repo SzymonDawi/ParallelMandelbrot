@@ -196,18 +196,28 @@ public class Chunking implements Runnable{
 
 
     private void blockChunking(String type){
-
+        int length_1 = 0, length_2 = 0;
         for (int c=0;c<num_threads;c++){
             chunk_array.add(new chunk());
         }
 
+        if(type.equals("by Row")){
+            length_1 = height;
+            length_2 = width;
+        }else {
+            length_1 = width;
+            length_2 = height;
+        }
+
         for(int k =0; k <num_threads; k++) {
             System.out.println("creating chunk "+k);
-
-            //TODO: add code for row or col
-            for (int i =0; i < height / num_threads; i++) {
-                for (int j = 0; j < width; j++) {
-                    chunk_array.get(k).add(j, i+((height/num_threads)*k));
+            for (int i =0; i < length_1 / num_threads; i++) {
+                for (int j = 0; j < length_2; j++) {
+                    if(length_1 == height) {
+                        chunk_array.get(k).add(j, i + ((height / num_threads) * k));
+                    }else {
+                        chunk_array.get(k).add(i + ((width / num_threads) * k), j);
+                    }
                 }
             }
         }
