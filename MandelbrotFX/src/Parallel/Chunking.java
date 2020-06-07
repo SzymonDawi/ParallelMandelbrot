@@ -21,11 +21,10 @@ public class Chunking implements Runnable{
     private final String viewSelection;
     private final int height = 720;
     private final int width = 1280;
-    private final ImageView imageView;
-    private final WritableImage mandelbrotImage = new WritableImage(1280, 720);
-    private final PixelWriter mandelbrotPixelWriter = mandelbrotImage.getPixelWriter();
-    private final WritableImage visualisationImage = new WritableImage(1280, 720);
-    private final PixelWriter visualisationPixelWriter  = visualisationImage.getPixelWriter();
+    private WritableImage mandelbrotImage;
+    private PixelWriter mandelbrotPixelWriter;
+    private WritableImage visualisationImage;
+    private PixelWriter visualisationPixelWriter;
     private long startTime;
     private Label actualTimeElapsed;
     private double timeElapsed;
@@ -36,17 +35,19 @@ public class Chunking implements Runnable{
 
     private volatile static boolean exit = false;
 
-    public Chunking(Button startButton, int numberOfIterations, Label actualTimeElapsed, ImageView imageView, String schedulingPolicy, String string_num_threads, int chunkSize, String chunkMethod, String viewSelection) {
-        this.imageView = imageView;
+    public Chunking(Button startButton, int numberOfIterations, Label actualTimeElapsed, WritableImage mandelbrotImage, WritableImage visualisationImage, String schedulingPolicy, String string_num_threads, int chunkSize, String chunkMethod, String viewSelection) {
+        this.mandelbrotImage = mandelbrotImage;
+        this.visualisationImage = visualisationImage;
         this.schedulingPolicy = schedulingPolicy;
         this.string_num_threads = string_num_threads;
-
         this.chunkMethod = chunkMethod;
         this.chunkSize = chunkSize;
         this.viewSelection = viewSelection;
         this.actualTimeElapsed = actualTimeElapsed;
         this.numberOfIterations = numberOfIterations;
         this.startButton = startButton;
+        mandelbrotPixelWriter = mandelbrotImage.getPixelWriter();
+        visualisationPixelWriter = visualisationImage.getPixelWriter();
         if(string_num_threads.equals("True Sequential")) {
             //TODO: true sequential code
         } else {
@@ -54,9 +55,6 @@ public class Chunking implements Runnable{
             chunk_array = new ArrayList<chunk>();
         }
     }
-
-    //allow us to exit loop when user presses stop
-    public static void setExit(boolean exitStatus) { exit = exitStatus;}
 
     @Override
     public void run(){
@@ -86,11 +84,6 @@ public class Chunking implements Runnable{
                         Thread.sleep(1);
                         Platform.runLater(() -> {
                             synchronized(chunk_array) {
-                                if(viewSelection.equals("Mandelbrot")) {
-                                    imageView.setImage(mandelbrotImage);
-                                } else {
-                                    imageView.setImage(visualisationImage);
-                                }
                                 endTime = System.nanoTime();
                                 timeElapsed = (TimeUnit.MILLISECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS)/1000.000);
                                 actualTimeElapsed.setText("Running... " + timeElapsed + "s");
@@ -129,11 +122,6 @@ public class Chunking implements Runnable{
                 try {
                     Platform.runLater(() -> {
                         synchronized(chunk_array) {
-                            if(viewSelection.equals("Mandelbrot")) {
-                                imageView.setImage(mandelbrotImage);
-                            } else {
-                                imageView.setImage(visualisationImage);
-                            }
                             endTime = System.nanoTime();
                             timeElapsed = (TimeUnit.MILLISECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS)/1000.000);
                             actualTimeElapsed.setText("Running... " + timeElapsed + "s");
@@ -150,15 +138,6 @@ public class Chunking implements Runnable{
             });
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    public WritableImage switchView(String s){
-        System.out.println(s);
-        if (s.equals("Mandelbrot")) {
-            return mandelbrotImage;
-        } else {
-            return visualisationImage;
         }
     }
 
@@ -195,11 +174,6 @@ public class Chunking implements Runnable{
             }
             try {
                 Platform.runLater(() -> {
-                        if(viewSelection.equals("Mandelbrot")) {
-                            //imageView.setImage(mandelbrotImage);
-                        } else {
-                            //imageView.setImage(visualisationImage);
-                        }
                         endTime = System.nanoTime();
                         timeElapsed = (TimeUnit.MILLISECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS)/1000.000);
                         actualTimeElapsed.setText("Running... " + timeElapsed + "s");
@@ -207,20 +181,6 @@ public class Chunking implements Runnable{
             }catch(Exception e){
 
             }
-        }
-
-        try {
-            Platform.runLater(() -> {
-                if(viewSelection.equals("Mandelbrot")) {
-                    imageView.setImage(mandelbrotImage);
-                } else {
-                    imageView.setImage(visualisationImage);
-                }
-                imageView.setImage(mandelbrotImage);
-                //actualTimeElapsed.setText("Finished after " + timeElapsed + "s");
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
