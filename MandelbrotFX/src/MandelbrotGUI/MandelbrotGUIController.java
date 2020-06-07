@@ -1,7 +1,8 @@
 package MandelbrotGUI;
 
 import Parallel.Chunking;
-import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -10,8 +11,9 @@ import javafx.scene.image.*;
 import javafx.scene.paint.Color;
 
 
-
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 
@@ -50,13 +52,13 @@ public class MandelbrotGUIController implements Initializable {
     //Setting up start button
     @FXML private Button startButton;
 
+    WritableImage img = new WritableImage(1280, 720);
+    PixelWriter pw  = img.getPixelWriter();
 
     //set up the image that will be shown
     @FXML private ImageView shownImage = new ImageView();
-    private WritableImage mandelbrotImage = new WritableImage(1280, 720);
-    private WritableImage visualisationImage = new WritableImage(1280, 720);
-    private PixelWriter visualisationPixelWriter  = visualisationImage.getPixelWriter();
-    private PixelWriter mandelbrotPixelWriter = mandelbrotImage.getPixelWriter();
+    private List list = new ArrayList();
+    ObservableList observableList;
 
     private Chunking t1;
     private  Thread th;
@@ -67,20 +69,15 @@ public class MandelbrotGUIController implements Initializable {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        if (viewSelection.equals("Mandelbrot")) {
-            shownImage.setImage(mandelbrotImage);
-        } else {
-            shownImage.setImage(visualisationImage);
-        }
             chunkSizeSelection = Integer.parseInt(chunkSizeComboBox.getValue().toString());
             for(int i = 0; i < 720; i++){
                 for(int j = 0; j <1280; j++){
-                    visualisationPixelWriter.setColor(j, i, Color.WHITE);
-                    mandelbrotPixelWriter.setColor(j, i, Color.WHITE);
+                    pw.setColor(j, i, Color.WHITE);
                 }
             }
+            shownImage.setImage(img);
             //this creates a new chunking instance and puts it on separate thread
-            t1 = new Chunking(startButton, numberOfIterationsSelection, actualTimeElapsed, mandelbrotImage, visualisationImage, schedulingComboBoxSelection, threadsComboBoxSelection, chunkSizeSelection, chunkMethodSelection, viewSelection);
+            t1 = new Chunking(startButton, numberOfIterationsSelection, actualTimeElapsed, shownImage, schedulingComboBoxSelection, threadsComboBoxSelection, chunkSizeSelection, chunkMethodSelection, viewSelection);
             th = new Thread(t1);
             th.setDaemon(true);
             th.start();
@@ -89,63 +86,46 @@ public class MandelbrotGUIController implements Initializable {
             System.out.println("scheduling policy: " + schedulingComboBoxSelection);
             System.out.println("number of threads: " + threadsComboBoxSelection);
     }
-
     public void updateViewSelection(ActionEvent event) {
-        Platform.runLater(() -> {
-            viewSelection = viewComboBox.getValue().toString();
-            if (viewSelection.equals("Mandelbrot")) {
-                shownImage.setImage(mandelbrotImage);
-            } else {
-                shownImage.setImage(visualisationImage);
-            }
-        });
+        viewSelection = viewComboBox.getValue().toString();
     }
 
     public void updateChunkSizeSelection(ActionEvent event) {
-        Platform.runLater(() -> {
-            if(!(chunkSizeComboBox.getValue() == null))  {
-                chunkSizeSelection = Integer.parseInt(chunkSizeComboBox.getValue().toString());
-            }
-        });
+        if(!(chunkSizeComboBox.getValue() == null))  {
+            chunkSizeSelection = Integer.parseInt(chunkSizeComboBox.getValue().toString());
+        }
     }
 
     public void updateChunkMethodSelection(ActionEvent event) {
-        Platform.runLater(() -> {
-            chunkMethodSelection = chunkMethodComboBox.getValue().toString();
-            addItemsToChunkSizeComboBox();
-        });
+        chunkMethodSelection = chunkMethodComboBox.getValue().toString();
+        addItemsToChunkSizeComboBox();
     }
 
     public void updateSchedulingComboBoxSelection(ActionEvent event)
     {
-        Platform.runLater(() -> {
-            schedulingComboBoxSelection = schedulingComboBox.getValue().toString();
-            if(schedulingComboBoxSelection.equals("Guided")) {
-                chunkMethodComboBox.setVisible(false);
-                chunkSizeComboBox.setVisible(false);
-                chunkMethodLabel.setVisible(false);
-                chunkSizeLabel.setVisible(false);
-            } else {
-                chunkMethodComboBox.setVisible(true);
-                chunkSizeComboBox.setVisible(true);
-                chunkMethodLabel.setVisible(true);
-                chunkSizeLabel.setVisible(true);
-            }
-        });
+        schedulingComboBoxSelection = schedulingComboBox.getValue().toString();
+        if(schedulingComboBoxSelection.equals("Guided")) {
+            chunkMethodComboBox.setVisible(false);
+            chunkSizeComboBox.setVisible(false);
+            chunkMethodLabel.setVisible(false);
+            chunkSizeLabel.setVisible(false);
+        } else {
+            chunkMethodComboBox.setVisible(true);
+            chunkSizeComboBox.setVisible(true);
+            chunkMethodLabel.setVisible(true);
+            chunkSizeLabel.setVisible(true);
+        }
     }
 
-    public void updateThreadsComboBoxSelection(ActionEvent event) {
-        Platform.runLater(() -> {
-            threadsComboBoxSelection = threadsComboBox.getValue().toString();
-            addItemsToChunkSizeComboBox();
-        });
+    public void updateThreadsComboBoxSelection(ActionEvent event)
+    {
+        threadsComboBoxSelection = threadsComboBox.getValue().toString();
+        addItemsToChunkSizeComboBox();
     }
 
     public void updateNumberOfIterationsComboBoxSelection(ActionEvent event)
     {
-        Platform.runLater(() -> {
-            numberOfIterationsSelection = Integer.parseInt(numberOfIterationsComboBox.getValue().toString());
-        });
+        numberOfIterationsSelection = Integer.parseInt(numberOfIterationsComboBox.getValue().toString());
     }
 
     private int findNumberOfCores() {
@@ -155,26 +135,26 @@ public class MandelbrotGUIController implements Initializable {
     }
 
     private void addItemsToChunkSizeComboBox() {
-        Platform.runLater(() -> {
-            if(!threadsComboBoxSelection.equals("True Sequential")) {
-                int threadsComboBoxSelectionInt = Integer.parseInt(threadsComboBoxSelection);
-                double maxRow = (720.00 / (double) threadsComboBoxSelectionInt);
-                double maxColumn = (1280.00 / (double) threadsComboBoxSelectionInt);
-                int maxRowCeiling = (int) Math.ceil(maxRow);
-                int maxColumnCeiling = (int) Math.ceil(maxColumn);
-                chunkSizeComboBox.getItems().clear();
-                if (chunkMethodSelection.equals("by Row")) {
-                    for (int i = 1; i <= maxRowCeiling; i++) {
-                        chunkSizeComboBox.getItems().add(i);
-                    }
-                } else {
-                    for (int i = 1; i <= maxColumnCeiling; i++) {
-                        chunkSizeComboBox.getItems().add(i);
-                    }
+        if(!threadsComboBoxSelection.equals("True Sequential")) {
+            int threadsComboBoxSelectionInt = Integer.parseInt(threadsComboBoxSelection);
+            list.clear();
+            double maxRow = (720.00 / (double) threadsComboBoxSelectionInt);
+            double maxColumn = (1280.00 / (double) threadsComboBoxSelectionInt);
+            int maxRowCeiling = (int) Math.ceil(maxRow);
+            int maxColumnCeiling = (int) Math.ceil(maxColumn);
+            if (chunkMethodSelection.equals("by Row")) {
+                for (int i = 1; i <= maxRowCeiling; i++) {
+                    list.add(i);
                 }
-                chunkSizeComboBox.setValue(1);
+            } else {
+                for (int i = 1; i <= maxColumnCeiling; i++) {
+                    list.add(i);
+                }
             }
-        });
+            observableList = FXCollections.observableList(list);
+            chunkSizeComboBox.setItems(observableList);
+            chunkSizeComboBox.setValue(1);
+        }
     }
 
     @Override
