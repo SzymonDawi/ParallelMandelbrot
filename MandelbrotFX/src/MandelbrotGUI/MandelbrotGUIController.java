@@ -32,6 +32,7 @@ public class MandelbrotGUIController implements Initializable {
     @FXML private ComboBox chunkSizeComboBox;
     @FXML private Label chunkMethodLabel;
     @FXML private Label chunkSizeLabel;
+    //@FXML private Label labelPlaceHolder;
     private String chunkMethodSelection;
     private int chunkSizeSelection;
 
@@ -52,9 +53,6 @@ public class MandelbrotGUIController implements Initializable {
     //Setting up start button
     @FXML private Button startButton;
 
-    WritableImage img = new WritableImage(1280, 720);
-    PixelWriter pw  = img.getPixelWriter();
-
     //set up the image that will be shown
     @FXML private ImageView shownImage = new ImageView();
     private List list = new ArrayList();
@@ -63,28 +61,36 @@ public class MandelbrotGUIController implements Initializable {
     private Chunking t1;
     private  Thread th;
     public void pressStartButton(ActionEvent event) {
-            startButton.setDisable(true);
-            try {
-                Thread.sleep(50);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        if(startButton.getText().equals("Start Parallelising Mandelbrot")) {
+            startButton.setText("Stop");
+            startButton.setStyle("-fx-background-color: #eb4034; -fx-border-style: solid; -fx-border-radius: 3 3 3 3;");
             chunkSizeSelection = Integer.parseInt(chunkSizeComboBox.getValue().toString());
+
+            WritableImage img = new WritableImage(1280, 720);
+            PixelWriter pw  = img.getPixelWriter();
+
             for(int i = 0; i < 720; i++){
                 for(int j = 0; j <1280; j++){
                     pw.setColor(j, i, Color.WHITE);
                 }
             }
+
             shownImage.setImage(img);
             //this creates a new chunking instance and puts it on separate thread
-            t1 = new Chunking(startButton, numberOfIterationsSelection, actualTimeElapsed, shownImage, schedulingComboBoxSelection, threadsComboBoxSelection, chunkSizeSelection, chunkMethodSelection, viewSelection);
+            t1 = new Chunking(numberOfIterationsSelection, actualTimeElapsed, shownImage, schedulingComboBoxSelection, threadsComboBoxSelection, chunkSizeSelection, chunkMethodSelection, viewSelection);
             th = new Thread(t1);
             th.setDaemon(true);
             th.start();
+
             System.out.println("view selection: " + viewSelection);
             System.out.println("chunk size: " + chunkSizeSelection);
             System.out.println("scheduling policy: " + schedulingComboBoxSelection);
             System.out.println("number of threads: " + threadsComboBoxSelection);
+        } else {
+            Parallel.Chunking.setExit(true);
+        }
+        startButton.setText("Start Parallelising Mandelbrot");
+        startButton.setStyle("-fx-background-color: #48c400; -fx-border-style: solid; -fx-border-radius: 3 3 3 3;");
     }
     public void updateViewSelection(ActionEvent event) {
         viewSelection = viewComboBox.getValue().toString();
@@ -93,6 +99,8 @@ public class MandelbrotGUIController implements Initializable {
     public void updateChunkSizeSelection(ActionEvent event) {
         if(!(chunkSizeComboBox.getValue() == null))  {
             chunkSizeSelection = Integer.parseInt(chunkSizeComboBox.getValue().toString());
+        } else {
+
         }
     }
 

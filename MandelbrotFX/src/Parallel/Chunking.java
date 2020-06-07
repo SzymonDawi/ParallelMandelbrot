@@ -1,7 +1,6 @@
 package Parallel;
 
 import javafx.application.Platform;
-import javafx.scene.control.Button;
 import javafx.scene.image.*;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
@@ -32,21 +31,18 @@ public class Chunking implements Runnable{
     private long endTime;
     private int numberOfIterations;
     private String colours[] = {"0xE3170A", "0xF75C03", "0xFAA613", "0xF3DE2C", "0xF0F66E"};
-    private Button startButton;
 
     private volatile static boolean exit = false;
 
-    public Chunking(Button startButton, int numberOfIterations, Label actualTimeElapsed, ImageView imageView, String schedulingPolicy, String string_num_threads, int chunkSize, String chunkMethod, String viewSelection) {
+    public Chunking(int numberOfIterations, Label actualTimeElapsed, ImageView imageView, String schedulingPolicy, String string_num_threads, int chunkSize, String chunkMethod, String viewSelection) {
         this.imageView = imageView;
         this.schedulingPolicy = schedulingPolicy;
         this.string_num_threads = string_num_threads;
-
         this.chunkMethod = chunkMethod;
         this.chunkSize = chunkSize;
         this.viewSelection = viewSelection;
         this.actualTimeElapsed = actualTimeElapsed;
         this.numberOfIterations = numberOfIterations;
-        this.startButton = startButton;
         if(string_num_threads.equals("True Sequential")) {
             //TODO: true sequential code
         } else {
@@ -64,6 +60,8 @@ public class Chunking implements Runnable{
         if(string_num_threads.equals("True Sequential")) {
             Sequential();
         } else {
+            exit = false;
+            while(!exit) {
                 createChunks(chunkMethod);
                 Scheduler Schedule = new Scheduler(numberOfIterations, num_threads,"static",chunk_array);
                 Schedule.run();
@@ -71,6 +69,7 @@ public class Chunking implements Runnable{
                 boolean running = true;
                 int done_task = 0;
                 while(running){
+
                     if(done_task == futures.size()){
                         running = false;
                     }
@@ -142,14 +141,15 @@ public class Chunking implements Runnable{
                 }catch (Exception e) {
                     e.printStackTrace();
                 }
+                exit = true;
             }
-        try {
-            Platform.runLater(() -> {
-                actualTimeElapsed.setText("Finished after " + timeElapsed + "s");
-                startButton.setDisable(false);
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
+            try {
+                Platform.runLater(() -> {
+                    actualTimeElapsed.setText("Finished after " + timeElapsed + "s");
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -191,6 +191,8 @@ public class Chunking implements Runnable{
                 } else {
                     mandelbrotPixelWriter.setColor(j, i, Color.web("0x000000"));
                 }
+
+                //System.out.println("ActiveThread" + Thread.currentThread().getId());
                 visualisationPixelWriter.setColor(j, i, Color.LIGHTBLUE);
             }
             try {
@@ -217,7 +219,7 @@ public class Chunking implements Runnable{
                     imageView.setImage(visualisationImage);
                 }
                 imageView.setImage(mandelbrotImage);
-                //actualTimeElapsed.setText("Finished after " + timeElapsed + "s");
+                actualTimeElapsed.setText("Finished after " + timeElapsed + "s");
             });
         } catch (Exception e) {
             e.printStackTrace();
