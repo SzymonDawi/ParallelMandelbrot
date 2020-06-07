@@ -1,8 +1,6 @@
 package MandelbrotGUI;
 
 import Parallel.Chunking;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -12,8 +10,6 @@ import javafx.scene.paint.Color;
 
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 
 
@@ -55,8 +51,6 @@ public class MandelbrotGUIController implements Initializable {
 
     //set up the image that will be shown
     @FXML private ImageView shownImage;
-    private List list = new ArrayList();
-    ObservableList observableList;
 
     public void pressStartButton(ActionEvent event) {
         if(startButton.getText().equals("Start Parallelising Mandelbrot")) {
@@ -138,22 +132,20 @@ public class MandelbrotGUIController implements Initializable {
 
     private void addItemsToChunkSizeComboBox() {
         int threadsComboBoxSelectionInt = Integer.parseInt(threadsComboBoxSelection);
-        list.clear();
+        chunkSizeComboBox.getItems().clear();
         double maxRow = (720.00 / (double) threadsComboBoxSelectionInt);
         double maxColumn = (1280.00 / (double) threadsComboBoxSelectionInt);
         int maxRowCeiling = (int) Math.ceil(maxRow);
         int maxColumnCeiling = (int) Math.ceil(maxColumn);
         if(chunkMethodSelection.equals("by Row")) {
             for(int i = 1; i <= maxRowCeiling; i++) {
-                    list.add(i);
+                    chunkSizeComboBox.getItems().add(i);
             }
         } else {
             for(int i = 1; i <= maxColumnCeiling; i++) {
-                    list.add(i);
+                chunkSizeComboBox.getItems().add(i);
             }
         }
-        observableList = FXCollections.observableList(list);
-        chunkSizeComboBox.setItems(observableList);
         chunkSizeComboBox.setValue(1);
     }
 
