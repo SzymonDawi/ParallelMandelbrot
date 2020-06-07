@@ -53,9 +53,7 @@ public class MandelbrotGUIController implements Initializable {
     @FXML private ImageView shownImage;
 
     public void pressStartButton(ActionEvent event) {
-        if(startButton.getText().equals("Start Parallelising Mandelbrot")) {
-            startButton.setText("Stop");
-            startButton.setStyle("-fx-background-color: #eb4034; -fx-border-style: solid; -fx-border-radius: 3 3 3 3;");
+        startButton.setDisable(true);
             chunkSizeSelection = Integer.parseInt(chunkSizeComboBox.getValue().toString());
             WritableImage img = new WritableImage(1280, 720);
             PixelWriter pw  = img.getPixelWriter();
@@ -66,7 +64,7 @@ public class MandelbrotGUIController implements Initializable {
             }
             shownImage.setImage(img);
             //this creates a new chunking instance and puts it on separate thread
-            Chunking t1 = new Chunking(numberOfIterationsSelection, actualTimeElapsed, shownImage, schedulingComboBoxSelection, threadsComboBoxSelection, chunkSizeSelection, chunkMethodSelection, viewSelection);
+            Chunking t1 = new Chunking(startButton, numberOfIterationsSelection, actualTimeElapsed, shownImage, schedulingComboBoxSelection, threadsComboBoxSelection, chunkSizeSelection, chunkMethodSelection, viewSelection);
             Thread th = new Thread(t1);
             th.setDaemon(true);
             th.start();
@@ -74,11 +72,6 @@ public class MandelbrotGUIController implements Initializable {
             System.out.println("chunk size: " + chunkSizeSelection);
             System.out.println("scheduling policy: " + schedulingComboBoxSelection);
             System.out.println("number of threads: " + threadsComboBoxSelection);
-        } else {
-            Parallel.Chunking.setExit(true);
-        }
-        startButton.setText("Start Parallelising Mandelbrot");
-        startButton.setStyle("-fx-background-color: #48c400; -fx-border-style: solid; -fx-border-radius: 3 3 3 3;");
     }
     public void updateViewSelection(ActionEvent event) {
         viewSelection = viewComboBox.getValue().toString();

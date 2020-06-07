@@ -1,6 +1,7 @@
 package Parallel;
 
 import javafx.application.Platform;
+import javafx.scene.control.Button;
 import javafx.scene.image.*;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
@@ -30,10 +31,11 @@ public class Chunking implements Runnable{
     private double timeElapsed;
     private long endTime;
     private int numberOfIterations;
+    Button startButton;
 
     private volatile static boolean exit = false;
 
-    public Chunking(int numberOfIterations, Label actualTimeElapsed, ImageView imageView, String schedulingPolicy, String string_num_threads, int chunkSize, String chunkMethod, String viewSelection) {
+    public Chunking(Button startButton, int numberOfIterations, Label actualTimeElapsed, ImageView imageView, String schedulingPolicy, String string_num_threads, int chunkSize, String chunkMethod, String viewSelection) {
         this.imageView = imageView;
         this.schedulingPolicy = schedulingPolicy;
         this.string_num_threads = string_num_threads;
@@ -42,6 +44,7 @@ public class Chunking implements Runnable{
         this.viewSelection = viewSelection;
         this.actualTimeElapsed = actualTimeElapsed;
         this.numberOfIterations = numberOfIterations;
+        this.startButton = startButton;
         if(string_num_threads.equals("True Sequential")) {
             //TODO: true sequential code
         } else {
@@ -50,9 +53,6 @@ public class Chunking implements Runnable{
         }
     }
 
-    //allow us to exit loop when user presses stop
-    public static void setExit(boolean exitStatus) { exit = exitStatus;}
-
     @Override
     public void run(){
         startTime = System.nanoTime();
@@ -60,8 +60,6 @@ public class Chunking implements Runnable{
             //TODO: true sequential code
             System.out.println("Ran True Sequential");
         } else {
-            exit = false;
-            while(!exit) {
                 createChunks(chunkMethod);
                 Scheduler Schedule = new Scheduler(numberOfIterations, num_threads,"static",chunk_array);
                 Schedule.run();
@@ -144,17 +142,16 @@ public class Chunking implements Runnable{
                 }catch (Exception e) {
                     e.printStackTrace();
                 }
-                exit = true;
             }
             try {
                 Platform.runLater(() -> {
+                    startButton.setDisable(false);
                     actualTimeElapsed.setText("Finished after " + timeElapsed + "s");
                 });
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
-        }
     }
 
     public void createChunks(String type){
