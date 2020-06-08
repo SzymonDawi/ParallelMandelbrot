@@ -81,7 +81,7 @@ public class MandelbrotGUIController implements Initializable {
         startButton.setStyle("-fx-background-color: #48c400; -fx-border-style: solid; -fx-border-radius: 3 3 3 3;");
     }
     public void updateViewSelection(ActionEvent event) {
-        viewSelection = viewComboBox.getValue().toString();
+            viewSelection = viewComboBox.getValue().toString();
     }
 
     public void updateChunkSizeSelection(ActionEvent event) {
@@ -131,7 +131,10 @@ public class MandelbrotGUIController implements Initializable {
     }
 
     private void addItemsToChunkSizeComboBox() {
-        int threadsComboBoxSelectionInt = Integer.parseInt(threadsComboBoxSelection);
+        int threadsComboBoxSelectionInt = 1;
+        if(!threadsComboBoxSelection.equals("True Sequential")) {
+            threadsComboBoxSelectionInt = Integer.parseInt(threadsComboBoxSelection);
+        }
         chunkSizeComboBox.getItems().clear();
         double maxRow = (720.00 / (double) threadsComboBoxSelectionInt);
         double maxColumn = (1280.00 / (double) threadsComboBoxSelectionInt);

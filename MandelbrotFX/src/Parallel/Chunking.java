@@ -30,6 +30,7 @@ public class Chunking implements Runnable{
     private double timeElapsed;
     private long endTime;
     private int numberOfIterations;
+    private String colours[] = {"0xE3170A", "0xF75C03", "0xFAA613", "0xF3DE2C", "0xF0F66E"};
 
     private volatile static boolean exit = false;
 
@@ -57,7 +58,7 @@ public class Chunking implements Runnable{
     public void run(){
         startTime = System.nanoTime();
         if(string_num_threads.equals("True Sequential")) {
-            //TODO: true sequential code
+            Sequential();
             System.out.println("Ran True Sequential");
         } else {
             exit = false;
@@ -157,6 +158,70 @@ public class Chunking implements Runnable{
         }
     }
 
+    public void Sequential(){
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                double c_re = (j - width / 2.0) * 4.0 / width;
+                double c_im = (i - height / 2.0) * 4.0 / width;
+                double x = 0, y = 0;
+                int iteration = 0;
+                while (x * x + y * y <= 4 && iteration < numberOfIterations) {
+                    double x_new = x * x - y * y + c_re;
+                    y = 2 * x * y + c_im;
+                    x = x_new;
+                    iteration++;
+                }
+
+                if (iteration < numberOfIterations) {
+                    if (iteration < 2) {
+                        mandelbrotPixelWriter.setColor(j, i, Color.web(colours[0]));
+                    } else if (iteration < 10) {
+                        mandelbrotPixelWriter.setColor(j, i, Color.web(colours[1]));
+                    } else if (iteration < 15) {
+                        mandelbrotPixelWriter.setColor(j, i, Color.web(colours[2]));
+                    } else if (iteration < 25) {
+                        mandelbrotPixelWriter.setColor(j, i, Color.web(colours[3]));
+                    } else {
+                        mandelbrotPixelWriter.setColor(j, i, Color.web(colours[4]));
+                    }
+                } else {
+                    mandelbrotPixelWriter.setColor(j, i, Color.web("0x000000"));
+                }
+
+                //System.out.println("ActiveThread" + Thread.currentThread().getId());
+                visualisationPixelWriter.setColor(j, i, Color.LIGHTBLUE);
+            }
+            try {
+                Platform.runLater(() -> {
+                        /*if (viewSelection.equals("Mandelbrot")) {
+                            imageView.setImage(mandelbrotImage);
+                        } else {
+                            imageView.setImage(visualisationImage);
+                        }*/
+                        endTime = System.nanoTime();
+                        timeElapsed = (TimeUnit.MILLISECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS) / 1000.000);
+                        actualTimeElapsed.setText("Running... " + timeElapsed + "s");
+                });
+            }catch(Exception e){
+
+            }
+        }
+
+        try {
+            Platform.runLater(() -> {
+                synchronized (mandelbrotImage) {
+                    if (viewSelection.equals("Mandelbrot")) {
+                        imageView.setImage(mandelbrotImage);
+                    } else {
+                        imageView.setImage(visualisationImage);
+                    }
+                }
+                actualTimeElapsed.setText("Finished after " + timeElapsed + "s");
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     public void createChunks(String type){
         //chunks the data.
 
