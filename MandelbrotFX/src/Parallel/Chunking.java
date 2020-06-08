@@ -33,6 +33,7 @@ public class Chunking implements Runnable{
     private int numberOfIterations;
     private String colours[] = {"0xE3170A", "0xF75C03", "0xFAA613", "0xF3DE2C", "0xF0F66E"};
     Button startButton;
+    private boolean isGUI;
 
     public Chunking(Button startButton, int numberOfIterations, Label actualTimeElapsed, ImageView imageView, String schedulingPolicy, String string_num_threads, int chunkSize, String chunkMethod, String viewSelection) {
         this.startButton = startButton;
@@ -44,6 +45,25 @@ public class Chunking implements Runnable{
         this.viewSelection = viewSelection;
         this.actualTimeElapsed = actualTimeElapsed;
         this.numberOfIterations = numberOfIterations;
+        this.isGUI = true;
+        if(string_num_threads.equals("True Sequential")) {
+            //TODO: true sequential code
+        } else {
+            this.num_threads = Integer.parseInt(string_num_threads);
+            chunk_array = new ArrayList<chunk>();
+        }
+    }
+
+    public Chunking( int numberOfIterations, String schedulingPolicy, String string_num_threads, int chunkSize, String chunkMethod) {
+        this.schedulingPolicy = schedulingPolicy;
+        this.string_num_threads = string_num_threads;
+        this.chunkMethod = chunkMethod;
+        this.chunkSize = chunkSize;
+        this.numberOfIterations = numberOfIterations;
+        this.viewSelection = null;
+        this.startButton = null;
+        this.imageView = null;
+        this.isGUI = false;
         if(string_num_threads.equals("True Sequential")) {
             //TODO: true sequential code
         } else {
@@ -53,26 +73,27 @@ public class Chunking implements Runnable{
     }
 
     @Override
-    public void run(){
-        try {
-            Platform.runLater(() -> {
-                startButton.setDisable(true);
-            });
-        } catch (Exception ignored) {
-        }
-        startTime = System.nanoTime();
-        if(string_num_threads.equals("True Sequential")) {
-            Sequential();
-            System.out.println("Ran True Sequential");
-        } else {
+    public void run() {
+        if (isGUI) {
+            try {
+                Platform.runLater(() -> {
+                    startButton.setDisable(true);
+                });
+            } catch (Exception ignored) {
+            }
+            startTime = System.nanoTime();
+            if (string_num_threads.equals("True Sequential")) {
+                Sequential();
+                System.out.println("Ran True Sequential");
+            } else {
                 createChunks(chunkMethod);
-                Scheduler Schedule = new Scheduler(numberOfIterations, num_threads,"static",chunk_array);
+                Scheduler Schedule = new Scheduler(numberOfIterations, num_threads, "static", chunk_array);
                 Schedule.run();
                 List<Future<?>> futures = Schedule.getFutures();
                 boolean running = true;
                 int done_task = 0;
-                while(running){
-                    if(done_task == futures.size()){
+                while (running) {
+                    if (done_task == futures.size()) {
                         running = false;
                     }
                     done_task = 0;
@@ -84,21 +105,21 @@ public class Chunking implements Runnable{
                     try {
                         Thread.sleep(1);
                         Platform.runLater(() -> {
-                            synchronized(chunk_array) {
-                                if(viewSelection.equals("Mandelbrot")) {
+                            synchronized (chunk_array) {
+                                if (viewSelection.equals("Mandelbrot")) {
                                     imageView.setImage(mandelbrotImage);
                                 } else {
                                     imageView.setImage(visualisationImage);
                                 }
                                 endTime = System.nanoTime();
-                                timeElapsed = (TimeUnit.MILLISECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS)/1000.000);
+                                timeElapsed = (TimeUnit.MILLISECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS) / 1000.000);
                                 actualTimeElapsed.setText("Running... " + timeElapsed + "s");
                             }
                         });
                     } catch (Exception ignored) {
 
                     }
-                    synchronized(chunk_array) {
+                    synchronized (chunk_array) {
                         for (Parallel.chunk chunk : chunk_array) {
                             for (int j = 0; j < chunk.getSize(); j++) {
                                 if (!chunk.getPixel(j).getColour().equals("0xFFFFFF")) {
@@ -112,29 +133,53 @@ public class Chunking implements Runnable{
                 //tells the javaFX GUI thread to update the image.
                 try {
                     Platform.runLater(() -> {
-                        synchronized(chunk_array) {
-                            if(viewSelection.equals("Mandelbrot")) {
+                        synchronized (chunk_array) {
+                            if (viewSelection.equals("Mandelbrot")) {
                                 imageView.setImage(mandelbrotImage);
                             } else {
                                 imageView.setImage(visualisationImage);
                             }
                             endTime = System.nanoTime();
-                            timeElapsed = (TimeUnit.MILLISECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS)/1000.000);
+                            timeElapsed = (TimeUnit.MILLISECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS) / 1000.000);
                             actualTimeElapsed.setText("Running... " + timeElapsed + "s");
                         }
                     });
-                }catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
-            try {
-                Platform.runLater(() -> {
-                    startButton.setDisable(false);
-                    actualTimeElapsed.setText("Finished after " + timeElapsed + "s");
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+                try {
+                    Platform.runLater(() -> {
+                        startButton.setDisable(false);
+                        actualTimeElapsed.setText("Finished after " + timeElapsed + "s");
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
+            }
+        } else {
+            if (string_num_threads.equals("True Sequential")) {
+                Sequential();
+                //System.out.println("Ran True Sequential");
+            } else {
+                createChunks(chunkMethod);
+                Scheduler Schedule = new Scheduler(numberOfIterations, num_threads, "static", chunk_array);
+                Schedule.run();
+                List<Future<?>> futures = Schedule.getFutures();
+                boolean running = true;
+                int done_task = 0;
+                while (running) {
+                    if (done_task == futures.size()) {
+                        running = false;
+                    }
+                    done_task = 0;
+                    for (Future<?> future : futures) {
+                        if (future.isDone()) {
+                            done_task++;
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -168,30 +213,33 @@ public class Chunking implements Runnable{
                 }
                 visualisationPixelWriter.setColor(j, i, Color.LIGHTBLUE);
             }
-            try {
-                Platform.runLater(() -> {
-                    endTime = System.nanoTime();
-                    timeElapsed = (TimeUnit.MILLISECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS) / 1000.000);
-                    actualTimeElapsed.setText("Running... " + timeElapsed + "s");
-                });
-            }catch(Exception e){
+            if(isGUI) {
+                try {
+                    Platform.runLater(() -> {
+                        endTime = System.nanoTime();
+                        timeElapsed = (TimeUnit.MILLISECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS) / 1000.000);
+                        actualTimeElapsed.setText("Running... " + timeElapsed + "s");
+                    });
+                }catch(Exception e){
 
+                }
             }
         }
-
-        try {
-            Platform.runLater(() -> {
-                synchronized (mandelbrotImage) {
-                    if (viewSelection.equals("Mandelbrot")) {
-                        imageView.setImage(mandelbrotImage);
-                    } else {
-                        imageView.setImage(visualisationImage);
+        if(isGUI) {
+            try {
+                Platform.runLater(() -> {
+                    synchronized (mandelbrotImage) {
+                        if (viewSelection.equals("Mandelbrot")) {
+                            imageView.setImage(mandelbrotImage);
+                        } else {
+                            imageView.setImage(visualisationImage);
+                        }
                     }
-                }
-                actualTimeElapsed.setText("Finished after " + timeElapsed + "s");
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
+                    actualTimeElapsed.setText("Finished after " + timeElapsed + "s");
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
     public void createChunks(String type){
