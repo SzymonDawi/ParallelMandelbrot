@@ -1,6 +1,7 @@
 package Parallel;
 
 import javafx.application.Platform;
+import javafx.scene.control.Button;
 import javafx.scene.image.*;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
@@ -31,10 +32,12 @@ public class Chunking implements Runnable{
     private long endTime;
     private int numberOfIterations;
     private String colours[] = {"0xE3170A", "0xF75C03", "0xFAA613", "0xF3DE2C", "0xF0F66E"};
+    Button startButton;
 
     private volatile static boolean exit = false;
 
-    public Chunking(int numberOfIterations, Label actualTimeElapsed, ImageView imageView, String schedulingPolicy, String string_num_threads, int chunkSize, String chunkMethod, String viewSelection) {
+    public Chunking(Button startButton, int numberOfIterations, Label actualTimeElapsed, ImageView imageView, String schedulingPolicy, String string_num_threads, int chunkSize, String chunkMethod, String viewSelection) {
+        this.startButton = startButton;
         this.imageView = imageView;
         this.schedulingPolicy = schedulingPolicy;
         this.string_num_threads = string_num_threads;
@@ -56,6 +59,14 @@ public class Chunking implements Runnable{
 
     @Override
     public void run(){
+        try {
+            Platform.runLater(() -> {
+                startButton.setDisable(true);
+            });
+        } catch (Exception ignored) {
+
+
+        }
         startTime = System.nanoTime();
         if(string_num_threads.equals("True Sequential")) {
             Sequential();
@@ -149,6 +160,7 @@ public class Chunking implements Runnable{
             }
             try {
                 Platform.runLater(() -> {
+                    startButton.setDisable(false);
                     actualTimeElapsed.setText("Finished after " + timeElapsed + "s");
                 });
             } catch (Exception e) {
