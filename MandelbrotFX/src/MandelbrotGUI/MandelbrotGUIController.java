@@ -101,14 +101,10 @@ public class MandelbrotGUIController implements Initializable {
     {
         schedulingComboBoxSelection = schedulingComboBox.getValue().toString();
         if(schedulingComboBoxSelection.equals("Guided")) {
-            chunkMethodComboBox.setVisible(false);
             chunkSizeComboBox.setVisible(false);
-            chunkMethodLabel.setVisible(false);
             chunkSizeLabel.setVisible(false);
         } else {
-            chunkMethodComboBox.setVisible(true);
             chunkSizeComboBox.setVisible(true);
-            chunkMethodLabel.setVisible(true);
             chunkSizeLabel.setVisible(true);
         }
     }
