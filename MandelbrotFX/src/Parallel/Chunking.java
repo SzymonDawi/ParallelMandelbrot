@@ -1,6 +1,7 @@
 package Parallel;
 
 import javafx.application.Platform;
+import javafx.scene.control.Button;
 import javafx.scene.image.*;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
@@ -31,10 +32,10 @@ public class Chunking implements Runnable{
     private long endTime;
     private int numberOfIterations;
     private String colours[] = {"0xE3170A", "0xF75C03", "0xFAA613", "0xF3DE2C", "0xF0F66E"};
+    Button startButton;
 
-    private volatile static boolean exit = false;
-
-    public Chunking(int numberOfIterations, Label actualTimeElapsed, ImageView imageView, String schedulingPolicy, String string_num_threads, int chunkSize, String chunkMethod, String viewSelection) {
+    public Chunking(Button startButton, int numberOfIterations, Label actualTimeElapsed, ImageView imageView, String schedulingPolicy, String string_num_threads, int chunkSize, String chunkMethod, String viewSelection) {
+        this.startButton = startButton;
         this.imageView = imageView;
         this.schedulingPolicy = schedulingPolicy;
         this.string_num_threads = string_num_threads;
@@ -51,18 +52,19 @@ public class Chunking implements Runnable{
         }
     }
 
-    //allow us to exit loop when user presses stop
-    public static void setExit(boolean exitStatus) { exit = exitStatus;}
-
     @Override
     public void run(){
+        try {
+            Platform.runLater(() -> {
+                startButton.setDisable(true);
+            });
+        } catch (Exception ignored) {
+        }
         startTime = System.nanoTime();
         if(string_num_threads.equals("True Sequential")) {
             Sequential();
             System.out.println("Ran True Sequential");
         } else {
-            exit = false;
-            while(!exit) {
                 createChunks(chunkMethod);
                 Scheduler Schedule = new Scheduler(numberOfIterations, num_threads,"static",chunk_array);
                 Schedule.run();
@@ -70,24 +72,15 @@ public class Chunking implements Runnable{
                 boolean running = true;
                 int done_task = 0;
                 while(running){
-            /*try {
-                Thread.sleep(100);
-            }catch (Exception e){
-
-            }*/
-
-
                     if(done_task == futures.size()){
                         running = false;
                     }
-
                     done_task = 0;
                     for (Future<?> future : futures) {
                         if (future.isDone()) {
                             done_task++;
                         }
                     }
-
                     try {
                         Thread.sleep(1);
                         Platform.runLater(() -> {
@@ -102,7 +95,6 @@ public class Chunking implements Runnable{
                                 actualTimeElapsed.setText("Running... " + timeElapsed + "s");
                             }
                         });
-
                     } catch (Exception ignored) {
 
                     }
@@ -116,18 +108,7 @@ public class Chunking implements Runnable{
                             }
                         }
                     }
-            /*try {
-                Platform.runLater(() -> {
-                    synchronized(chunk_array) {
-                        imageView.setImage(img);
-                    }
-                });
-
-            } catch (Exception e) {
-
-            }*/
                 }
-
                 //tells the javaFX GUI thread to update the image.
                 try {
                     Platform.runLater(() -> {
@@ -145,10 +126,9 @@ public class Chunking implements Runnable{
                 }catch (Exception e) {
                     e.printStackTrace();
                 }
-                exit = true;
-            }
             try {
                 Platform.runLater(() -> {
+                    startButton.setDisable(false);
                     actualTimeElapsed.setText("Finished after " + timeElapsed + "s");
                 });
             } catch (Exception e) {
@@ -171,7 +151,6 @@ public class Chunking implements Runnable{
                     x = x_new;
                     iteration++;
                 }
-
                 if (iteration < numberOfIterations) {
                     if (iteration < 2) {
                         mandelbrotPixelWriter.setColor(j, i, Color.web(colours[0]));
@@ -187,17 +166,10 @@ public class Chunking implements Runnable{
                 } else {
                     mandelbrotPixelWriter.setColor(j, i, Color.web("0x000000"));
                 }
-
-                //System.out.println("ActiveThread" + Thread.currentThread().getId());
                 visualisationPixelWriter.setColor(j, i, Color.LIGHTBLUE);
             }
             try {
                 Platform.runLater(() -> {
-                        /*if (viewSelection.equals("Mandelbrot")) {
-                            imageView.setImage(mandelbrotImage);
-                        } else {
-                            imageView.setImage(visualisationImage);
-                        }*/
                     endTime = System.nanoTime();
                     timeElapsed = (TimeUnit.MILLISECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS) / 1000.000);
                     actualTimeElapsed.setText("Running... " + timeElapsed + "s");
