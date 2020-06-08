@@ -59,6 +59,7 @@ public class Chunking implements Runnable{
         startTime = System.nanoTime();
         if(string_num_threads.equals("True Sequential")) {
             Sequential();
+            System.out.println("Ran True Sequential");
         } else {
             exit = false;
             while(!exit) {
@@ -69,6 +70,12 @@ public class Chunking implements Runnable{
                 boolean running = true;
                 int done_task = 0;
                 while(running){
+            /*try {
+                Thread.sleep(100);
+            }catch (Exception e){
+
+            }*/
+
 
                     if(done_task == futures.size()){
                         running = false;
@@ -99,31 +106,28 @@ public class Chunking implements Runnable{
                     } catch (Exception ignored) {
 
                     }
-                        synchronized(chunk_array) {
-                            for (Parallel.chunk chunk : chunk_array) {
-                                for (int j = 0; j < chunk.getSize(); j++) {
-                                    if (!chunk.getPixel(j).getColour().equals("0xFFFFFF")) {
-                                        try{
-                                            visualisationPixelWriter.setColor(chunk.getPixel(j).getX(), chunk.getPixel(j).getY(), Color.web(chunk.getPixel(j).getVisualisationColour()));
-                                            mandelbrotPixelWriter.setColor(chunk.getPixel(j).getX(), chunk.getPixel(j).getY(), Color.web(chunk.getPixel(j).getColour()));
-                                        }catch (Exception e){
-
-                                        }
-                                    }
+                    synchronized(chunk_array) {
+                        for (Parallel.chunk chunk : chunk_array) {
+                            for (int j = 0; j < chunk.getSize(); j++) {
+                                if (!chunk.getPixel(j).getColour().equals("0xFFFFFF")) {
+                                    visualisationPixelWriter.setColor(chunk.getPixel(j).getX(), chunk.getPixel(j).getY(), Color.web(chunk.getPixel(j).getVisualisationColour()));
+                                    mandelbrotPixelWriter.setColor(chunk.getPixel(j).getX(), chunk.getPixel(j).getY(), Color.web(chunk.getPixel(j).getColour()));
                                 }
                             }
                         }
-                }
-                for (Parallel.chunk chunk : chunk_array) {
-                    for (int j = 0; j < chunk.getSize(); j++) {
-                        try{
-                            visualisationPixelWriter.setColor(chunk.getPixel(j).getX(), chunk.getPixel(j).getY(), Color.web(chunk.getPixel(j).getVisualisationColour()));
-                            mandelbrotPixelWriter.setColor(chunk.getPixel(j).getX(), chunk.getPixel(j).getY(), Color.web(chunk.getPixel(j).getColour()));
-                        }catch (Exception e){
-
-                        }
                     }
+            /*try {
+                Platform.runLater(() -> {
+                    synchronized(chunk_array) {
+                        imageView.setImage(img);
+                    }
+                });
+
+            } catch (Exception e) {
+
+            }*/
                 }
+
                 //tells the javaFX GUI thread to update the image.
                 try {
                     Platform.runLater(() -> {
@@ -150,15 +154,7 @@ public class Chunking implements Runnable{
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
-    }
 
-    public WritableImage switchView(String s){
-        System.out.println(s);
-        if (s.equals("Mandelbrot")) {
-            return mandelbrotImage;
-        } else {
-            return visualisationImage;
         }
     }
 
@@ -197,14 +193,14 @@ public class Chunking implements Runnable{
             }
             try {
                 Platform.runLater(() -> {
-                        if(viewSelection.equals("Mandelbrot")) {
-                            //imageView.setImage(mandelbrotImage);
+                        /*if (viewSelection.equals("Mandelbrot")) {
+                            imageView.setImage(mandelbrotImage);
                         } else {
-                            //imageView.setImage(visualisationImage);
-                        }
-                        endTime = System.nanoTime();
-                        timeElapsed = (TimeUnit.MILLISECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS)/1000.000);
-                        actualTimeElapsed.setText("Running... " + timeElapsed + "s");
+                            imageView.setImage(visualisationImage);
+                        }*/
+                    endTime = System.nanoTime();
+                    timeElapsed = (TimeUnit.MILLISECONDS.convert((endTime - startTime), TimeUnit.NANOSECONDS) / 1000.000);
+                    actualTimeElapsed.setText("Running... " + timeElapsed + "s");
                 });
             }catch(Exception e){
 
@@ -213,26 +209,28 @@ public class Chunking implements Runnable{
 
         try {
             Platform.runLater(() -> {
-                if(viewSelection.equals("Mandelbrot")) {
-                    imageView.setImage(mandelbrotImage);
-                } else {
-                    imageView.setImage(visualisationImage);
+                synchronized (mandelbrotImage) {
+                    if (viewSelection.equals("Mandelbrot")) {
+                        imageView.setImage(mandelbrotImage);
+                    } else {
+                        imageView.setImage(visualisationImage);
+                    }
                 }
-                imageView.setImage(mandelbrotImage);
                 actualTimeElapsed.setText("Finished after " + timeElapsed + "s");
             });
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
     public void createChunks(String type){
+        //chunks the data.
+
         switch (schedulingPolicy) {
             case "Static-block":
                 blockChunking(type);
                 break;
             case "Static-Cyclic":
-                cyclicChunking(type, chunkSize);
+                cyclicChunking(type);
                 break;
             case "Dynamic":
                 dynamicChunking(type, chunkSize);
@@ -263,34 +261,24 @@ public class Chunking implements Runnable{
 
 
     private void blockChunking(String type){
-        int length_1 = 0, length_2 = 0;
+
         for (int c=0;c<num_threads;c++){
             chunk_array.add(new chunk());
         }
 
-        if(type.equals("by Row")){
-            length_1 = height;
-            length_2 = width;
-        }else {
-            length_1 = width;
-            length_2 = height;
-        }
-
         for(int k =0; k <num_threads; k++) {
             System.out.println("creating chunk "+k);
-            for (int i =0; i < length_1 / num_threads; i++) {
-                for (int j = 0; j < length_2; j++) {
-                    if(length_1 == height) {
-                        chunk_array.get(k).add(j, i + ((height / num_threads) * k));
-                    }else {
-                        chunk_array.get(k).add(i + ((width / num_threads) * k), j);
-                    }
+
+            //TODO: add code for row or col
+            for (int i =0; i < height / num_threads; i++) {
+                for (int j = 0; j < width; j++) {
+                    chunk_array.get(k).add(j, i+((height/num_threads)*k));
                 }
             }
         }
     }
 
-    private void cyclicChunking(String type, int chunkSize){
+    private void cyclicChunking(String type){
         int currentCore = 0;
         int max;
         if(type.equals("by Row"))max = height;else max = width;
@@ -299,15 +287,9 @@ public class Chunking implements Runnable{
             chunk_array.add(new chunk());
         }
         for(int i =0;i< max; i++){
-            for(int j =0; j < chunkSize; j++) {
-                chunk_array.get(currentCore).appendChunks(chunkType(type, i));
-                i++;
-            }
+            chunk_array.get(currentCore).appendChunks(chunkType(type,i));
             currentCore++;
-            if (currentCore >= num_threads) {
-                currentCore = 0;
-            }
-            i--;
+            if (currentCore>= num_threads){currentCore =0;}
         }
     }
 
