@@ -73,7 +73,7 @@ public class Chunking implements Runnable{
         }
     }
 
-    public Chunking( int numberOfIterations, String schedulingPolicy, String string_num_threads, int chunkSize, String chunkMethod) {
+    public Chunking( int numberOfIterations, String schedulingPolicy, String string_num_threads, int chunkSize, String chunkMethod, int fractal) {
         this.schedulingPolicy = schedulingPolicy;
         this.string_num_threads = string_num_threads;
         this.chunkMethod = chunkMethod;
@@ -83,6 +83,19 @@ public class Chunking implements Runnable{
         this.startButton = null;
         this.imageView = null;
         this.isGUI = false;
+        if(fractal == 1){
+            this.zoom = 4.0;
+            this.offset_x = 0.0;
+            this.offset_y = 0.0;
+        }else if(fractal == 2){
+            this.zoom = 0.3;
+            this.offset_x = -0.75;
+            this.offset_y = -0.12;
+        }else{
+            this.zoom = 1.0;
+            this.offset_x = -0.15;
+            this.offset_y = 0.7;
+        }
         if(string_num_threads.equals("True Sequential")) {
             //TODO: true sequential code
         } else {
