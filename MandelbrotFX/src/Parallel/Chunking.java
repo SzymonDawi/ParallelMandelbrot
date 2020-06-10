@@ -31,11 +31,15 @@ public class Chunking implements Runnable{
     private double timeElapsed;
     private long endTime;
     private int numberOfIterations;
-    private String colours[] = {"0xE3170A", "0xF75C03", "0xFAA613", "0xF3DE2C", "0xF0F66E"};
+    private String colours[] = {"0xE3170A", "0xF75C03", "0xFAA613", "0xF3DE2C", "0xF0F66E", "0xDB00B6", "a100f2","0x3772ff"};
     Button startButton;
     private boolean isGUI;
+    private double zoom;
+    private double offset_y;
+    private double offset_x;
 
-    public Chunking(Button startButton, int numberOfIterations, Label actualTimeElapsed, ImageView imageView, String schedulingPolicy, String string_num_threads, int chunkSize, String chunkMethod, String viewSelection) {
+    public Chunking(Button startButton, int numberOfIterations, Label actualTimeElapsed, ImageView imageView, String schedulingPolicy,
+                    String string_num_threads, int chunkSize, String chunkMethod, String viewSelection, int Fractal) {
         this.startButton = startButton;
         this.imageView = imageView;
         this.schedulingPolicy = schedulingPolicy;
@@ -46,6 +50,21 @@ public class Chunking implements Runnable{
         this.actualTimeElapsed = actualTimeElapsed;
         this.numberOfIterations = numberOfIterations;
         this.isGUI = true;
+
+        if(Fractal == 1){
+            this.zoom = 4.0;
+            this.offset_x = 0.0;
+            this.offset_y = 0.0;
+        }else if(Fractal == 2){
+            this.zoom = 0.3;
+            this.offset_x = -0.75;
+            this.offset_y = -0.12;
+        }else{
+            this.zoom = 1.0;
+            this.offset_x = -0.15;
+            this.offset_y = 0.7;
+        }
+
         if(string_num_threads.equals("True Sequential")) {
             //TODO: true sequential code
         } else {
@@ -87,7 +106,8 @@ public class Chunking implements Runnable{
                 System.out.println("Ran True Sequential");
             } else {
                 createChunks(chunkMethod);
-                Scheduler Schedule = new Scheduler(numberOfIterations, num_threads, "static", chunk_array);
+                Scheduler Schedule = new Scheduler(numberOfIterations, num_threads, "static", chunk_array,
+                        zoom, offset_y, offset_x);
                 Schedule.run();
                 List<Future<?>> futures = Schedule.getFutures();
                 boolean running = true;
@@ -163,7 +183,8 @@ public class Chunking implements Runnable{
                 //System.out.println("Ran True Sequential");
             } else {
                 createChunks(chunkMethod);
-                Scheduler Schedule = new Scheduler(numberOfIterations, num_threads, "static", chunk_array);
+                Scheduler Schedule = new Scheduler(numberOfIterations, num_threads, "static", chunk_array,
+                        zoom, offset_y, offset_x);
                 Schedule.run();
                 List<Future<?>> futures = Schedule.getFutures();
                 boolean running = true;
@@ -186,28 +207,38 @@ public class Chunking implements Runnable{
     public void Sequential(){
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                double c_re = (j - width / 2.0) * 4.0 / width;
-                double c_im = (i - height / 2.0) * 4.0 / width;
+                double c_re = ((j- width / 2.0) * zoom / width) + offset_x;
+                double c_im = ((i - height/ 2.0) * zoom / width) + offset_y;
                 double x = 0, y = 0;
                 int iteration = 0;
+
                 while (x * x + y * y <= 4 && iteration < numberOfIterations) {
                     double x_new = x * x - y * y + c_re;
                     y = 2 * x * y + c_im;
                     x = x_new;
                     iteration++;
                 }
+
+
                 if (iteration < numberOfIterations) {
-                    if (iteration < 2) {
+                    if (iteration < numberOfIterations/1000) {
                         mandelbrotPixelWriter.setColor(j, i, Color.web(colours[0]));
-                    } else if (iteration < 10) {
+                    } else if (iteration < numberOfIterations/500) {
                         mandelbrotPixelWriter.setColor(j, i, Color.web(colours[1]));
-                    } else if (iteration < 15) {
+                    } else if (iteration < numberOfIterations/300) {
                         mandelbrotPixelWriter.setColor(j, i, Color.web(colours[2]));
-                    } else if (iteration < 25) {
+                    } else if (iteration < numberOfIterations/200) {
                         mandelbrotPixelWriter.setColor(j, i, Color.web(colours[3]));
-                    } else {
+                    }else if (iteration < numberOfIterations/100) {
                         mandelbrotPixelWriter.setColor(j, i, Color.web(colours[4]));
+                    }else if (iteration < numberOfIterations/75) {
+                        mandelbrotPixelWriter.setColor(j, i, Color.web(colours[5]));
+                    }else if (iteration < numberOfIterations/50) {
+                        mandelbrotPixelWriter.setColor(j, i, Color.web(colours[6]));
+                    } else {
+                        mandelbrotPixelWriter.setColor(j, i, Color.web(colours[7]));
                     }
+
                 } else {
                     mandelbrotPixelWriter.setColor(j, i, Color.web("0x000000"));
                 }
@@ -242,6 +273,7 @@ public class Chunking implements Runnable{
             }
         }
     }
+
     public void createChunks(String type){
         //chunks the data.
 

@@ -13,11 +13,17 @@ public class Scheduler implements Runnable{
     private final ScheduledExecutorService scheduler;
     private final List<Future<?>> futures = new ArrayList<Future<?>>();
     private int numberOfIterations;
+    private double zoom;
+    private double offset_y;
+    private double offset_x;
 
-    public Scheduler(int numberOfIterations, int num_threads, String type, ArrayList<chunk> chunkArray){
+    public Scheduler(int numberOfIterations, int num_threads, String type, ArrayList<chunk> chunkArray, double zoom, double offset_y, double offset_x){
         chunk_array = chunkArray;
         scheduler = Executors.newScheduledThreadPool(num_threads);
         this.numberOfIterations = numberOfIterations;
+        this.zoom = zoom;
+        this.offset_y = offset_y;
+        this.offset_x = offset_x;
     }
 
 //    public void getNumberOfThread() {
@@ -32,7 +38,7 @@ public class Scheduler implements Runnable{
             synchronized(chunk_array) {
                 System.out.println(chunk_array.size());
                 for (Parallel.chunk chunk : chunk_array) {
-                    Jobs task = new Jobs(num_jobs, numberOfIterations, chunk, latch);
+                    Jobs task = new Jobs(num_jobs, numberOfIterations, chunk, latch, zoom, offset_y, offset_x);
                     Future<?> f = scheduler.submit(task);
                     futures.add(f);
                     num_jobs++;

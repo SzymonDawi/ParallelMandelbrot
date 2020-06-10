@@ -10,18 +10,23 @@ public class Jobs implements Runnable{
     private chunk c;
     private int width = 1280;
     private int height = 720;
-    private String colours[] = {"0xE3170A", "0xF75C03", "0xFAA613", "0xF3DE2C", "0xF0F66E"};
+    private String colours[] = {"0xE3170A", "0xF75C03", "0xFAA613", "0xF3DE2C", "0xF0F66E", "0xDB00B6", "a100f2","0x3772ff"};
     private CountDownLatch latch;
     private int size = 0;
     private long numberOfThread;
+    private double zoom = 4.0; // the smaller the number the closer the zoom
+    private double offset_y =0.0;
+    private double offset_x =0.0;
 
-
-    public Jobs(int id, int iteration_num, chunk c, CountDownLatch latch){
+    public Jobs(int id, int iteration_num, chunk c, CountDownLatch latch, double zoom, double offset_y, double offset_x){
         id_task = id;
         this.iteration_num = iteration_num;
         this.c = c;
         size = c.getSize();
         this.latch = latch;
+        this.zoom = zoom;
+        this.offset_y = offset_y;
+        this.offset_x = offset_x;
     }
 
     @Override
@@ -38,11 +43,12 @@ public class Jobs implements Runnable{
         System.out.println("Task "+id_task+" is running");
         for (int i = 0; i < size; i++) {
             synchronized(c) {
-                double c_re = (c.getPixel(i).getX() - width / 2.0) * 4.0 / width;
-                double c_im = (c.getPixel(i).getY() - height / 2.0) * 4.0 / width;
+
+                double c_re = ((c.getPixel(i).getX() - width / 2.0) * zoom / width) + offset_x;
+                double c_im = ((c.getPixel(i).getY() - height/ 2.0) * zoom / width) + offset_y;
                 double x = 0, y = 0;
                 int iteration = 0;
-                while (x * x + y * y <= 4 && iteration < iteration_num) {
+                while (x * x + y * y < 8 && iteration < iteration_num) {
                     double x_new = x * x - y * y + c_re;
                     y = 2 * x * y + c_im;
                     x = x_new;
@@ -50,17 +56,22 @@ public class Jobs implements Runnable{
                 }
 
                 if (iteration < iteration_num) {
-                    //System.out.println("iteration " + iteration );
-                    if (iteration < 2) {
+                    if (iteration < iteration_num/1000) {
                         c.getPixel(i).setColour(colours[0]);
-                    } else if (iteration < 10) {
+                    } else if (iteration < iteration_num/500) {
                         c.getPixel(i).setColour(colours[1]);
-                    } else if (iteration < 15) {
+                    } else if (iteration < iteration_num/300) {
                         c.getPixel(i).setColour(colours[2]);
-                    } else if (iteration < 25) {
+                    } else if (iteration < iteration_num/200) {
                         c.getPixel(i).setColour(colours[3]);
-                    } else {
+                    }else if (iteration < iteration_num/100) {
                         c.getPixel(i).setColour(colours[4]);
+                    }else if (iteration < iteration_num/75) {
+                        c.getPixel(i).setColour(colours[5]);
+                    }else if (iteration < iteration_num/50) {
+                        c.getPixel(i).setColour(colours[6]);
+                    } else {
+                        c.getPixel(i).setColour(colours[7]);
                     }
 
                 } else {

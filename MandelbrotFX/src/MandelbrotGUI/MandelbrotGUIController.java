@@ -1,6 +1,7 @@
 package MandelbrotGUI;
 
 import Parallel.Chunking;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -11,6 +12,7 @@ import javafx.scene.paint.Color;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.concurrent.TimeUnit;
 
 
 public class MandelbrotGUIController implements Initializable {
@@ -62,8 +64,11 @@ public class MandelbrotGUIController implements Initializable {
                 }
             }
             shownImage.setImage(img);
+
             //this creates a new chunking instance and puts it on separate thread
-            Chunking t1 = new Chunking(startButton, numberOfIterationsSelection, actualTimeElapsed, shownImage, schedulingComboBoxSelection, threadsComboBoxSelection, chunkSizeSelection, chunkMethodSelection, viewSelection);
+            Chunking t1 = new Chunking(startButton, numberOfIterationsSelection, actualTimeElapsed, shownImage,
+                    schedulingComboBoxSelection, threadsComboBoxSelection, chunkSizeSelection, chunkMethodSelection,
+                    viewSelection,3);
             Thread th = new Thread(t1);
             th.setDaemon(true);
             th.start();
