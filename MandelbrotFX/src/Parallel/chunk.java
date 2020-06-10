@@ -18,6 +18,7 @@ public class chunk {
     public void add(int x, int y){
         pixel p = new pixel(x,y);
         p.setColour("0xFFFFFF");
+        p.setVisualisationColour("0xFFFFFF");
         chunk_list.add(p);
     }
 
