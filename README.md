@@ -14,9 +14,14 @@ You will then be presented with a GUI, select your preferred settings and click 
 * Scheduling Policy
     * Here you can decide which scheduling policy you will use to parallelise the Mandelbrot set.
     * Static-block, Static-cyclic, Dynamic and Guided are currently supported.
+* Chunk Method
+    * Here you can select between chunking by column or chunking by row.
+    * This will change how work is assigned to threads.
 * Chunk Size
     * Here you can decide what chunk size you will use to parallelise the Mandelbrot set.
-    * All images are currently 1280x720 therefore you have 921,600 pixels that could be parallelised. As one thread will always have this chunk size, when you have two or more threads you will have the option from 1 to 460,800 pixels as your chunk size.
+    * The work is chunked by column or row.
+    * All images are currently 1280x720 therefore you have either 1280 or 720 columns or rows that could be parallelised.
+    * You can can choose any number between 1 and 1280 or 720.
 * Change Image View
     * Here you will decide if you will see the finished image or a related image that shows what sections are being worked on at each point in time.
     * Selecting "Mandelbrot" will show the Mandelbrot image, selecting "Parallel Visualisation" will show what threads are working on what part of the image.
@@ -25,6 +30,11 @@ You will then be presented with a GUI, select your preferred settings and click 
     * Here you can select from a range between 10 and 100000 iterations to pass through the Mandelbrot set.
     * This will be the maximum number of iterations a pixel will complete the Mandelbrot set (if not finished before then).
     * The number of iterations will impact the time it takes to complete the tasks and the overall colours shown by the Mandelbrot Image.
+* Change Fractal
+    * Here you can select between fractal 1, 2 or 3.
+    * This will provide different fractals to run the mandelbrot set on.
+    * The output image will look different and take a varied amount of time when the change the fractal.
+
 ### Technology
 * Maven
 * Java Executor and ExecutorService
