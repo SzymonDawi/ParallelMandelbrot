@@ -25,7 +25,7 @@
                         </StackPane>
                         <StackPane prefHeight="150.0" prefWidth="200.0">
                            <children>
-                              <ComboBox fx:id="threadsComboBox" onAction="#updateThreadsComboBoxSelection" prefHeight="25.0" prefWidth="160.0" style="-fx-border-style: solid; -fx-border-radius: 3 3 3 3; -fx-background-color: #ffffff;" />
+                              <ComboBox fx:id="threadsComboBox" onAction="#updateThreadsComboBoxSelection" prefHeight="25.0" prefWidth="140.0" style="-fx-border-style: solid; -fx-border-radius: 3 3 3 3; -fx-background-color: #ffffff;" />
                            </children></StackPane>
                      </children>
                   </VBox>
@@ -41,7 +41,7 @@
                         </StackPane>
                         <StackPane prefHeight="150.0" prefWidth="180.0">
                            <children>
-                              <ComboBox fx:id="schedulingComboBox" onAction="#updateSchedulingComboBoxSelection" prefHeight="25.0" prefWidth="160.0" style="-fx-background-color: #ffffff; -fx-border-style: solid; -fx-border-radius: 3 3 3 3;" />
+                              <ComboBox fx:id="schedulingComboBox" onAction="#updateSchedulingComboBoxSelection" prefHeight="25.0" prefWidth="140.0" style="-fx-background-color: #ffffff; -fx-border-style: solid; -fx-border-radius: 3 3 3 3;" />
                            </children></StackPane>
                      </children>
                   </VBox>
@@ -103,11 +103,11 @@
                         </StackPane>
                         <StackPane prefHeight="150.0" prefWidth="200.0">
                            <children>
-                              <ComboBox fx:id="viewComboBox" onAction="#updateViewSelection" prefHeight="25.0" prefWidth="160.0" style="-fx-background-color: #ffffff; -fx-border-radius: 3 3 3 3; -fx-border-style: solid;" />
+                              <ComboBox fx:id="viewComboBox" onAction="#updateViewSelection" prefHeight="25.0" prefWidth="140.0" style="-fx-background-color: #ffffff; -fx-border-radius: 3 3 3 3; -fx-border-style: solid;" />
                            </children></StackPane>
                      </children>
                   </VBox>
-                  <VBox prefHeight="200.0" prefWidth="200.0">
+                  <VBox layoutX="840.0" layoutY="12.0" prefHeight="200.0" prefWidth="200.0">
                      <children>
                         <StackPane prefHeight="150.0" prefWidth="200.0">
                            <children>
@@ -120,7 +120,25 @@
                         </StackPane>
                         <StackPane prefHeight="150.0" prefWidth="200.0">
                            <children>
-                              <ComboBox fx:id="numberOfIterationsComboBox" onAction="#updateNumberOfIterationsComboBoxSelection" prefHeight="25.0" prefWidth="160.0" style="-fx-border-style: solid; -fx-border-radius: 3 3 3 3; -fx-background-color: #ffffff;" />
+                              <ComboBox fx:id="numberOfIterationsComboBox" onAction="#updateNumberOfIterationsComboBoxSelection" prefHeight="25.0" prefWidth="140.0" style="-fx-border-style: solid; -fx-border-radius: 3 3 3 3; -fx-background-color: #ffffff;" />
+                           </children>
+                        </StackPane>
+                     </children>
+                  </VBox>
+                  <VBox prefHeight="200.0" prefWidth="200.0">
+                     <children>
+                        <StackPane prefHeight="150.0" prefWidth="200.0">
+                           <children>
+                              <Label fx:id="fractalLabel" alignment="CENTER" prefHeight="25.0" prefWidth="193.0" text="Fractal">
+                                 <font>
+                                    <Font name="Comic Sans MS" size="12.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </StackPane>
+                        <StackPane prefHeight="150.0" prefWidth="200.0">
+                           <children>
+                              <ComboBox fx:id="fractalComboBox" onAction="#updateFractalSelection" prefHeight="25.0" prefWidth="140.0" style="-fx-border-style: solid; -fx-border-radius: 3 3 3 3; -fx-background-color: #ffffff;" />
                            </children>
                         </StackPane>
                      </children>
@@ -131,11 +149,11 @@
                            <children>
                               <HBox prefHeight="100.0" prefWidth="200.0">
                                  <children>
-                                    <Label fx:id="timeElapsedLabel" alignment="CENTER" prefHeight="25.0" prefWidth="127.0" text="Time Elapsed:">
+                                    <Label fx:id="timeElapsedLabel" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="81.0" text="Time Elapsed:">
                                        <font>
                                           <Font name="Comic Sans MS" size="12.0" />
                                        </font></Label>
-                                    <Label fx:id="actualTimeElapsed" alignment="CENTER" prefHeight="25.0" prefWidth="132.0" text="The time will be here">
+                                    <Label fx:id="actualTimeElapsed" alignment="CENTER" prefHeight="25.0" prefWidth="144.0" text="The time will be here">
                                        <font>
                                           <Font name="Comic Sans MS" size="12.0" />
                                        </font></Label>

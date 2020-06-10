@@ -34,7 +34,7 @@ public class MandelbrotGUIController implements Initializable {
     private String chunkMethodSelection;
     private int chunkSizeSelection;
 
-    //Setting up view
+    //Setting up iterations
     @FXML private Label numberOfIterationsLabel;
     @FXML private ComboBox numberOfIterationsComboBox;
     private int numberOfIterationsSelection;
@@ -43,6 +43,11 @@ public class MandelbrotGUIController implements Initializable {
     @FXML private Label viewLabel;
     @FXML private ComboBox viewComboBox;
     private String viewSelection;
+
+    //Setting up fractal
+    @FXML private Label fractalLabel;
+    @FXML private ComboBox fractalComboBox;
+    private int fractalSelection;
 
     //Setting up time
     @FXML private Label timeElapsedLabel;
@@ -68,7 +73,7 @@ public class MandelbrotGUIController implements Initializable {
             //this creates a new chunking instance and puts it on separate thread
             Chunking t1 = new Chunking(startButton, numberOfIterationsSelection, actualTimeElapsed, shownImage,
                     schedulingComboBoxSelection, threadsComboBoxSelection, chunkSizeSelection, chunkMethodSelection,
-                    viewSelection,3);
+                    viewSelection,fractalSelection);
             Thread th = new Thread(t1);
             th.setDaemon(true);
             th.start();
@@ -77,6 +82,11 @@ public class MandelbrotGUIController implements Initializable {
             System.out.println("scheduling policy: " + schedulingComboBoxSelection);
             System.out.println("number of threads: " + threadsComboBoxSelection);
     }
+
+    public void updateFractalSelection(ActionEvent event) {
+        fractalSelection = Integer.parseInt(fractalComboBox.getValue().toString());
+    }
+
     public void updateViewSelection(ActionEvent event) {
         viewSelection = viewComboBox.getValue().toString();
     }
@@ -156,6 +166,12 @@ public class MandelbrotGUIController implements Initializable {
         viewLabel.setText("Change Image View");
         actualTimeElapsed.setText("");
         numberOfIterationsLabel.setText("Number of Iterations");
+        fractalLabel.setText("Fractal");
+
+
+        //initialise fractalComboBox options
+        fractalComboBox.getItems().addAll(1, 2, 3);
+        fractalComboBox.setValue(1);
 
         //initialise threadsComboBox options
         threadsComboBox.getItems().add("True Sequential");
@@ -193,6 +209,7 @@ public class MandelbrotGUIController implements Initializable {
         chunkMethodSelection = chunkMethodComboBox.getValue().toString();
         chunkSizeSelection = Integer.parseInt(chunkSizeComboBox.getValue().toString());
         numberOfIterationsSelection = Integer.parseInt(numberOfIterationsComboBox.getValue().toString());
+        fractalSelection = Integer.parseInt(fractalComboBox.getValue().toString());
 
         //initialise startButton
         startButton.setText("Start Parallelising Mandelbrot");
