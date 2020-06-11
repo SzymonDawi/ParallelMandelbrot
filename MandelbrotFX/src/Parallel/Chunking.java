@@ -296,7 +296,7 @@ public class Chunking implements Runnable{
                 blockChunking(type);
                 break;
             case "Static-Cyclic":
-                cyclicChunking(type);
+                cyclicChunking(type,chunkSize);
                 break;
             case "Dynamic":
                 dynamicChunking(type, chunkSize);
@@ -353,7 +353,7 @@ public class Chunking implements Runnable{
         }
     }
 
-    private void cyclicChunking(String type){
+    private void cyclicChunking(String type, int chunkSize){
         int currentCore = 0;
         int max;
         if(type.equals("by Row"))max = height;else max = width;
@@ -362,9 +362,15 @@ public class Chunking implements Runnable{
             chunk_array.add(new chunk());
         }
         for(int i =0;i< max; i++){
-            chunk_array.get(currentCore).appendChunks(chunkType(type,i));
+            for(int j =0; j < chunkSize; j++) {
+                chunk_array.get(currentCore).appendChunks(chunkType(type, i));
+                i++;
+            }
             currentCore++;
-            if (currentCore>= num_threads){currentCore =0;}
+            if (currentCore >= num_threads) {
+                currentCore = 0;
+            }
+            i--;
         }
     }
 
