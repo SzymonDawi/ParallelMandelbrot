@@ -13,15 +13,15 @@ public class withoutGUIMain {
         //Choose number of iterations, a number greater than zero. The higher the number, the longer the process will take.
         int numberOfIterations = 10000;
         //Choose a scheduling policy: "Static-block", "Static-Cyclic", "Dynamic", "Guided".
-        String schedulingPolicy = "Static-block";
+        String schedulingPolicy = "Static-cyclic";
         //Choose a number of threads to choose from, between 1 and the total number of threads your system has.
         String stringNumberOfThreads = "1";
         //Choose a chunk size between 1 and 1280, this will be the number of rows or columns in each chunk.
-        int chunkSize = 1;
+        int chunkSize = 720;
         //Choose whether you want to chunk by row or column: "by Row", "by Column".
         String chunkMethod = "by Row";
         //Choose which fractal you want to process, choose between 1, 2 or 3.
-        int fractal = 3;
+        int fractal = 1;
         startTime = System.nanoTime();
         Chunking t1 = new Chunking( numberOfIterations, schedulingPolicy, stringNumberOfThreads, chunkSize,
                 chunkMethod, fractal);

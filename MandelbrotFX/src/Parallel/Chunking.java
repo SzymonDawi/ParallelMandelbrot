@@ -279,6 +279,7 @@ public class Chunking implements Runnable{
                             imageView.setImage(visualisationImage);
                         }
                     }
+                    startButton.setDisable(false);
                     actualTimeElapsed.setText("Finished after " + timeElapsed + "s");
                 });
             } catch (Exception e) {
