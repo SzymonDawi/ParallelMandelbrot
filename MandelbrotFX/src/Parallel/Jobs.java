@@ -40,7 +40,7 @@ public class Jobs implements Runnable{
 
         //runs mandelbrot on the chunk.
         numberOfThread = Thread.currentThread().getId();
-        System.out.println("Task "+id_task+" is running");
+        //System.out.println("Task "+id_task+" is running");
         for (int i = 0; i < size; i++) {
             synchronized(c) {
 
@@ -81,7 +81,7 @@ public class Jobs implements Runnable{
                 c.getPixel(i).setVisualisationColour(getThreadNumberColour((int)numberOfThread));
             }
         }
-        System.out.println("Task " + id_task + " is done");
+        //System.out.println("Task " + id_task + " is done");
     }
 
     private String getThreadNumberColour(int threadNumber) {

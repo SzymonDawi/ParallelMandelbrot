@@ -116,7 +116,7 @@ public class Chunking implements Runnable{
             startTime = System.nanoTime();
             if (string_num_threads.equals("True Sequential")) {
                 Sequential();
-                System.out.println("Ran True Sequential");
+                //System.out.println("Ran True Sequential");
             } else {
                 createChunks(chunkMethod);
                 Scheduler Schedule = new Scheduler(numberOfIterations, num_threads, "static", chunk_array,
@@ -340,7 +340,7 @@ public class Chunking implements Runnable{
             length_2 = height;
         }
         for(int k =0; k <num_threads; k++) {
-            System.out.println("creating chunk "+k);
+            //System.out.println("creating chunk "+k);
             for (int i =0; i < length_1 / num_threads; i++) {
                 for (int j = 0; j < length_2; j++) {
                     if(length_1 == height) {
@@ -386,7 +386,7 @@ public class Chunking implements Runnable{
                     chunk_array.add(new chunk());
                 }
                 chunk_array.get(chunkArrayPos).appendChunks(chunkType(type,index));
-                System.out.println(chunkArrayPos);
+                //System.out.println(chunkArrayPos);
                 index++;
                 count++;
                 if(index>=max) break;
@@ -413,7 +413,7 @@ public class Chunking implements Runnable{
 
                 }
                 chunk_array.get(chunkArrayPos).appendChunks(chunkType(type,index));
-                System.out.println(chunkArrayPos);
+                //System.out.println(chunkArrayPos);
                 index++;
                 count++;
                 if(index>=max) break;

@@ -36,7 +36,7 @@ public class Scheduler implements Runnable{
         CountDownLatch latch = new CountDownLatch(1);
         try{
             synchronized(chunk_array) {
-                System.out.println(chunk_array.size());
+                //System.out.println(chunk_array.size());
                 for (Parallel.chunk chunk : chunk_array) {
                     Jobs task = new Jobs(num_jobs, numberOfIterations, chunk, latch, zoom, offset_y, offset_x);
                     Future<?> f = scheduler.submit(task);
