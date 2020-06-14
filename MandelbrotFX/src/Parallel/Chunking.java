@@ -149,8 +149,8 @@ public class Chunking implements Runnable{
                                 actualTimeElapsed.setText("Running... " + timeElapsed + "s");
                             }
                         });
-                    } catch (Exception ignored) {
-
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                     synchronized (chunk_array) {
                         for (Parallel.chunk chunk : chunk_array) {
@@ -193,7 +193,6 @@ public class Chunking implements Runnable{
         } else {
             if (string_num_threads.equals("True Sequential")) {
                 Sequential();
-                //System.out.println("Ran True Sequential");
             } else {
                 createChunks(chunkMethod);
                 Scheduler Schedule = new Scheduler(numberOfIterations, num_threads, "static", chunk_array,
@@ -265,7 +264,7 @@ public class Chunking implements Runnable{
                         actualTimeElapsed.setText("Running... " + timeElapsed + "s");
                     });
                 }catch(Exception e){
-
+                    e.printStackTrace();
                 }
             }
         }
@@ -340,7 +339,6 @@ public class Chunking implements Runnable{
             length_2 = height;
         }
         for(int k =0; k <num_threads; k++) {
-            System.out.println("creating chunk "+k);
             for (int i =0; i < length_1 / num_threads; i++) {
                 for (int j = 0; j < length_2; j++) {
                     if(length_1 == height) {
@@ -357,7 +355,6 @@ public class Chunking implements Runnable{
         int currentCore = 0;
         int max;
         if(type.equals("by Row"))max = height;else max = width;
-
         for (int c=0;c<num_threads;c++){
             chunk_array.add(new chunk());
         }
@@ -386,12 +383,10 @@ public class Chunking implements Runnable{
                     chunk_array.add(new chunk());
                 }
                 chunk_array.get(chunkArrayPos).appendChunks(chunkType(type,index));
-                System.out.println(chunkArrayPos);
                 index++;
                 count++;
                 if(index>=max) break;
             }
-
             chunkArrayPos++;
             count = 0;
         }
@@ -410,7 +405,6 @@ public class Chunking implements Runnable{
             while(count<chunkSize){
                 if(count ==0){
                     chunk_array.add(new chunk());
-
                 }
                 chunk_array.get(chunkArrayPos).appendChunks(chunkType(type,index));
                 System.out.println(chunkArrayPos);

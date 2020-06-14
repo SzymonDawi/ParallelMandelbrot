@@ -26,10 +26,6 @@ public class Scheduler implements Runnable{
         this.offset_x = offset_x;
     }
 
-//    public void getNumberOfThread() {
-//        Thread.currentThread().getName();
-//    }
-
     @Override
     public void run(){
         //assigns the jobs to threads and starts them all at the same time.
@@ -46,7 +42,7 @@ public class Scheduler implements Runnable{
             }
             latch.countDown();
         }catch (Exception e){
-
+            e.printStackTrace();
         }
 
     }

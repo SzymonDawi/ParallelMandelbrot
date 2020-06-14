@@ -77,7 +77,6 @@ public class Jobs implements Runnable{
                 } else {
                     c.getPixel(i).setColour("0x000000");
                 }
-                //System.out.println("ActiveThread" + Thread.currentThread().getId());
                 c.getPixel(i).setVisualisationColour(getThreadNumberColour((int)numberOfThread));
             }
         }

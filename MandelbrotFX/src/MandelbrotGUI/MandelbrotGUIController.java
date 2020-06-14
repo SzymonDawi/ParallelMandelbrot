@@ -69,7 +69,6 @@ public class MandelbrotGUIController implements Initializable {
                 }
             }
             shownImage.setImage(img);
-
             //this creates a new chunking instance and puts it on separate thread
             Chunking t1 = new Chunking(startButton, numberOfIterationsSelection, actualTimeElapsed, shownImage,
                     schedulingComboBoxSelection, threadsComboBoxSelection, chunkSizeSelection, chunkMethodSelection,
@@ -77,10 +76,6 @@ public class MandelbrotGUIController implements Initializable {
             Thread th = new Thread(t1);
             th.setDaemon(true);
             th.start();
-            System.out.println("view selection: " + viewSelection);
-            System.out.println("chunk size: " + chunkSizeSelection);
-            System.out.println("scheduling policy: " + schedulingComboBoxSelection);
-            System.out.println("number of threads: " + threadsComboBoxSelection);
     }
 
     public void updateFractalSelection(ActionEvent event) {
@@ -168,7 +163,6 @@ public class MandelbrotGUIController implements Initializable {
         numberOfIterationsLabel.setText("Number of Iterations");
         fractalLabel.setText("Fractal");
 
-
         //initialise fractalComboBox options
         fractalComboBox.getItems().addAll(1, 2, 3);
         fractalComboBox.setValue(1);
@@ -213,9 +207,5 @@ public class MandelbrotGUIController implements Initializable {
 
         //initialise startButton
         startButton.setText("Start Parallelising Mandelbrot");
-
-        //File file = new File("mandelbrot.png");
-        //Image image = new Image(file.toURI().toString());
-        //shownImage.setImage(image);
     }
 }
